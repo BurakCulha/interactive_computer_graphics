@@ -1,0 +1,3 @@
+/home/bc/konu_tekrarlari_ws/interactive_computer_graphics_projects/1/build/CMakeFiles/createWindow.dir
+/home/bc/konu_tekrarlari_ws/interactive_computer_graphics_projects/1/build/CMakeFiles/edit_cache.dir
+/home/bc/konu_tekrarlari_ws/interactive_computer_graphics_projects/1/build/CMakeFiles/rebuild_cache.dir
