@@ -5,6 +5,8 @@
 
 ## loads obj using a simple custom obj loader.
 
+## and applies a texture to loaded object. 
+
 ## left mouse button turns the object to right in camera frame. 
 
 ## right mouse button translates object in camera frame.
