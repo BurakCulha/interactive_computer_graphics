@@ -1,13 +1,6 @@
 #include <iostream>
 #include <GL/freeglut.h>
 
-
-
-void myDisplay();
-void myKeyboard(unsigned char key, int x, int y);
-void myPassiveMouse(int x, int y);
-void myIdle();
-
 float red = 0;
 float green = 0;
 float blue = 0;
@@ -16,6 +9,13 @@ int WINDOW_HEIGHT = 600;
 const int VIEWPORT_WIDTH = 500;
 const int VIEWPORT_HEIGHT = 500;
 
+
+
+void myDisplay();
+void myKeyboard(unsigned char key, int x, int y);
+void myPassiveMouse(int x, int y);
+void myIdle();
+void reshapeFunction(int width, int height);
 int main(int argc, char** argv) {
 
     // glut initializations
@@ -30,10 +30,11 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(myKeyboard);
     glutPassiveMotionFunc(myPassiveMouse);
     glutIdleFunc(myIdle);
+    glutReshapeFunc(reshapeFunction);
 
     // opengl initializations
     glClearColor(0, 0, 0, 0);
-
+    glViewport(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
 
 
 
