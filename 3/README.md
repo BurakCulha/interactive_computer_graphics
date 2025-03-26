@@ -1,19 +1,22 @@
 
 ## displays and transforms object using oop principles. 
 
-## initializes opengl context via freeglut. 
+## initializes opengl context via glfw. 
 
 ## loads obj using a simple custom obj loader.
 
 ## and applies a texture to loaded object. 
-
-## centers the object by finding the bounding box.
 
 ## left mouse button turns the object to right in camera frame. 
 
 ## right mouse button translates object in camera frame.
 
 ## zoom in and out via mouse wheel.
+
+## uses imgui and glfw for interaction. 
+
+## you can set shading parameters and lighting direction via imgui. 
+
 
 
 
