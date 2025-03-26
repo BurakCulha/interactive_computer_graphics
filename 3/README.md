@@ -7,7 +7,7 @@
 
 ## and applies a texture to loaded object. 
 
-## left mouse button turns the object to right in camera frame. 
+## left mouse button rotates the object in camera frame. 
 
 ## right mouse button translates object in camera frame.
 
