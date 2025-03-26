@@ -25,7 +25,7 @@ void main() {
     // fragColor = diffuseColorFunction() + fragColor * 0.0001 * vec4(specular_color * ambient_color, 1);
     // fragColor = specularColorFunction() + 0.00001 * fragColor;
 
-    fragColor = texture(texture_diffuse, f_texCoord) * (diffuseColorFunction() + specularColorFunction() + vec4(ambient_color,0));
+    fragColor = texture(texture_diffuse, f_texCoord) * (diffuseColorFunction() + specularColorFunction()) + 0.5 * vec4(ambient_color,0);
     // fragColor = fragColor * 0.001 + vec4(1, 1, 0, 1);
 
 }
@@ -58,7 +58,7 @@ vec4 specularColorFunction() {
     float cosPhi = dot(half_vector_unit, fragment_normal_unit);
     cosPhi = max(cosPhi, 0);
 
-    res = intensity * (1/cosPhi) * K_s * pow(cosPhi, shininess);
+    res = intensity * (1/cosTheta) * K_s * pow(cosPhi, shininess);
 
     return res;
 }

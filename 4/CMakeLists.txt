@@ -4,11 +4,11 @@ project(renderBuffer)
 
 set(project_dir ${CMAKE_SOURCE_DIR})
 set(project_source_dir ${project_dir}/src)
-set(project_include_dir ${project_dir}/include)
+# set(project_include_dir ${project_dir}/include)
 
 
-set(project_implementations_dir  
-                        ${project_dir}/src/implementations)
+# set(project_implementations_dir  
+#                         ${project_dir}/src/implementations)
 
 set(transformations_dir ${project_dir}/../utils/transformations)
 set(transformations_sources ${transformations_dir}/transformations.cpp)
@@ -23,9 +23,9 @@ add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLEW)
 
 set(project_sources 
         ${project_source_dir}/main.cpp
-        ${project_implementations_dir}/shaderProgram.cpp
-        ${project_implementations_dir}/camera.cpp
-        ${project_implementations_dir}/mesh.cpp
+      #   ${project_implementations_dir}/shaderProgram.cpp
+      #   ${project_implementations_dir}/camera.cpp
+      #   ${project_implementations_dir}/mesh.cpp
         ${transformations_sources}
         ${imgui_sources}
 )
@@ -54,7 +54,7 @@ find_package(glfw3 3.4 REQUIRED)
 # include_directories(${glfw3_INCLUDE_DIRS})
 
 include_directories(${transformations_dir})
-include_directories(${project_include_dir})
+# include_directories(${project_include_dir})
 include_directories(${stbi_include_dir})
 include_directories(${imgui_dir})
 

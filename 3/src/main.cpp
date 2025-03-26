@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 450 core");
     // ImGui_ImplGlfw_SetCallbacksChainForAllWindows(true);
-    ImGui_ImplGlfw_SetCallbacksChainForAllWindows(false);
+    // ImGui_ImplGlfw_SetCallbacksChainForAllWindows(false);
 
 
     glClearColor(1, 0.5, 0.25, 1);
