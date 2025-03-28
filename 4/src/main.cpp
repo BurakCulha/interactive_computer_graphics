@@ -17,10 +17,10 @@ using namespace std;
 ShaderProgram *teapotShaderPtr, *planeShaderPtr;
 
 
-int g_button{}, g_state{};
 int lastX{}, lastY{};
 
 glm::mat4 rx(1), ry(1), tz(1), transformation_in_camera_frame(1);
+glm::mat4 rx_plane(1), ry_plane(1), tz_plane(1), transformation_in_camera_frame_plane(1);
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -218,26 +218,57 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
         cout << "y offset: " << yoffset << endl;
         static float fovY{45};
+        static float fovY_plane{45};
 
         if(yoffset == 1) { // zoom in.
 
-            fovY -= (float)0.5f;
-            if(fovY<1) fovY = 1.0f;
-            glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-            teapotShaderPtr->useProgram();
-            teapotShaderPtr->setMat4("projection", proj);
-            planeShaderPtr->useProgram();
-            planeShaderPtr->setMat4("projection", proj);
+            // fovY -= (float)0.5f;
+            // if(fovY<1) fovY = 1.0f;
+            // glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+            // teapotShaderPtr->useProgram();
+            // teapotShaderPtr->setMat4("projection", proj);
+            if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+                fovY_plane -= 0.5f;
+                if(fovY_plane<=1) fovY_plane = 1.0f;
+                glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
+                planeShaderPtr->useProgram();
+                planeShaderPtr->setMat4("projection", proj_plane);
+
+            } else {
+                fovY -= (float)0.5f;
+                if(fovY<1) fovY = 1.0f;
+                glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+                teapotShaderPtr->useProgram();
+                teapotShaderPtr->setMat4("projection", proj);
+
+            }
 
         } else if(yoffset == -1) { // zoom out.
 
-            fovY += (float)0.5f;
-            if(fovY>=88) fovY = 88.0f;
-            glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-            teapotShaderPtr->useProgram();
-            teapotShaderPtr->setMat4("projection", proj);
-            planeShaderPtr->useProgram();
-            planeShaderPtr->setMat4("projection", proj);
+            // fovY += (float)0.5f;
+            // if(fovY>=88) fovY = 88.0f;
+            // glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+            // teapotShaderPtr->useProgram();
+            // teapotShaderPtr->setMat4("projection", proj);
+
+            if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+                fovY_plane += 0.5f;
+                if(fovY_plane>=88) fovY_plane = 88.0f;
+                glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
+                planeShaderPtr->useProgram();
+                planeShaderPtr->setMat4("projection", proj_plane);
+
+            } else {
+                fovY += (float)0.5f;
+                if(fovY>=88) fovY = 88.0f;
+                glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+                teapotShaderPtr->useProgram();
+                teapotShaderPtr->setMat4("projection", proj);
+
+            }
+
+            // planeShaderPtr->useProgram();
+            // planeShaderPtr->setMat4("projection", proj);
 
         }
 
@@ -255,8 +286,16 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
             float rotate_y_axis{}, rotate_x_axis{};
             rotate_y_axis = (float)diffX/10.0f;
             rotate_x_axis = (float)diffY/10.0f;
-            rx = glm::rotate(rx, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
-            ry = glm::rotate(ry, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+            // rx = glm::rotate(rx, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
+            // ry = glm::rotate(ry, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+
+            if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+                rx_plane = glm::rotate(rx_plane, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
+                ry_plane = glm::rotate(ry_plane, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+            } else {
+                rx = glm::rotate(rx, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
+                ry = glm::rotate(ry, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+            }
 
         }
 
@@ -265,15 +304,24 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
             // cout << "(x: "<< x <<  ", y: "<< y << ")" << endl;
             float translate_z{};
             translate_z = (float)diffY/30.0f;
-            tz = glm::translate(tz, glm::vec3(0, 0, -translate_z));
+            // tz = glm::translate(tz, glm::vec3(0, 0, -translate_z));
+
+            if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+                tz_plane = glm::translate(tz_plane, glm::vec3(0, 0, -translate_z));
+            } else {
+                tz = glm::translate(tz, glm::vec3(0, 0, -translate_z));
+            }
 
         }
 
         transformation_in_camera_frame = tz * ry * rx;
         teapotShaderPtr->useProgram();
         teapotShaderPtr->setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
+
+
+        transformation_in_camera_frame_plane = tz_plane * ry_plane * rx_plane;
         planeShaderPtr->useProgram();
-        planeShaderPtr->setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
+        planeShaderPtr->setMat4("transformation_in_camera_frame", transformation_in_camera_frame_plane);
         
         lastX = x; lastY = y;
 
