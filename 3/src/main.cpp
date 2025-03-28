@@ -193,12 +193,12 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
         // cout << "(x: "<< xpos <<  ", y: "<< ypos << ")" << endl;
 
         if(button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-            cout << "mouse sag buton tetiklendi. " << endl;
+            // cout << "mouse right buton pressed. " << endl;
             lastX = (int)xpos;
             lastY = (int)ypos;
         }
         if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            cout << "left one selammsss" << endl;
+            // cout << "left button pressed " << endl;
             lastX = (int)xpos;
             lastY = (int)ypos;
         }
@@ -206,7 +206,7 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
         //     cout << "mouse sag buton release tetiklendi. " << endl;
         // }
         // if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-        //     cout << "left one selammsss release tetiklendik. " << endl;
+        //     cout << "left button release tetiklendik. " << endl;
         // }
     }
 }

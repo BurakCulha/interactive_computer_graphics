@@ -1,21 +1,25 @@
+## render to texture feature is used.  
 
-## displays and transforms object using oop principles. 
+## displays and transforms teapot object WITHOUT using oop principles. 
 
 ## initializes opengl context via glfw. 
 
-## loads obj using a simple custom obj loader.
+## loads teapot and plane obj using a simple custom obj loader.
 
-## and applies a texture to loaded object. 
+## and applies a texture to loaded teapot object. 
 
-## left mouse button rotates the object in camera frame. 
+## left mouse button adjusts camera angles in world frame.  
 
-## right mouse button translates object in camera frame.
+## right mouse button translates camera to the teapot object in world frame.
+
+## if ALT key is pressed right/left mouse buttons controls same parameters for rendering plane. 
 
 ## zoom in and out via mouse wheel.
 
 ## uses imgui and glfw for interaction. 
 
-## you can set shading parameters and lighting direction via imgui. 
+## you can set the color of the plane, shading parameters and lighting direction for teapot object via imgui.   
+  
 
 
 
