@@ -1,10 +1,6 @@
-// #include "imgui.h"
-// #include "imgui_impl_glfw.h"
-// #include "imgui_impl_opengl3.h"
-
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,7 +14,7 @@ using namespace std;
 
 
 
-ShaderProgram *teapotShaderPtr;
+ShaderProgram *teapotShaderPtr, *planeShaderPtr;
 
 
 int g_button{}, g_state{};
@@ -93,6 +89,19 @@ int main() {
     
     teapotShader.setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
 
+    ShaderProgram planeShader("../glsl/planeVS.vert", "../glsl/planeFS.frag");
+    planeShader.useProgram();
+    planeShaderPtr = &planeShader;
+
+    Mesh planeMesh("../objFiles/plane_2.obj");
+
+    planeShader.setMat4("model", planeMesh.getModelMatrix());
+    planeShader.setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
+    planeShader.setMat4("view", view);
+    planeShader.setMat4("projection", proj);
+    
+
+
     while(!glfwWindowShouldClose(windowPtr)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -100,6 +109,11 @@ int main() {
         teapotShader.useProgram();
         teapotMesh.draw(teapotShader);
 
+        planeShader.useProgram();
+        planeMesh.draw(planeShader);
+
+
+        teapotShader.useProgram();
 
         // drawing ends.
 
@@ -210,14 +224,20 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
             fovY -= (float)0.5f;
             if(fovY<1) fovY = 1.0f;
             glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+            teapotShaderPtr->useProgram();
             teapotShaderPtr->setMat4("projection", proj);
+            planeShaderPtr->useProgram();
+            planeShaderPtr->setMat4("projection", proj);
 
         } else if(yoffset == -1) { // zoom out.
 
             fovY += (float)0.5f;
             if(fovY>=88) fovY = 88.0f;
             glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+            teapotShaderPtr->useProgram();
             teapotShaderPtr->setMat4("projection", proj);
+            planeShaderPtr->useProgram();
+            planeShaderPtr->setMat4("projection", proj);
 
         }
 
@@ -250,7 +270,10 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
         }
 
         transformation_in_camera_frame = tz * ry * rx;
+        teapotShaderPtr->useProgram();
         teapotShaderPtr->setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
+        planeShaderPtr->useProgram();
+        planeShaderPtr->setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
         
         lastX = x; lastY = y;
 
