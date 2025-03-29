@@ -26,6 +26,7 @@ set(project_sources
         ${project_implementations_dir}/shaderProgram.cpp
         ${project_implementations_dir}/camera.cpp
         ${project_implementations_dir}/mesh.cpp
+        ${project_implementations_dir}/framebuffer.cpp
         ${transformations_sources}
         ${imgui_sources}
 )

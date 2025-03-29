@@ -43,6 +43,7 @@ class Mesh {
         void setupMesh();
         unordered_map<string, GLuint> meshAttribLocMap;
         glm::mat4 modelMatrix;
+        static int active_texture_unit_count;
     
     public:
         GLuint vaoId;
@@ -55,6 +56,9 @@ class Mesh {
         void myTextureLoader(const string& path, const string& type);
         void centerTheMesh();
         glm::mat4 getModelMatrix();
+        void addTexture(Texture& tex);
+
+        static Texture textureCreator(int width, int height, const string& type, GLenum format);
 
 };
 

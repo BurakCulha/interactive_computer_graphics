@@ -9,6 +9,7 @@
 #include "shaderProgram.hpp"
 #include "mesh.hpp"
 #include "camera.hpp"
+#include "framebuffer.hpp"
 
 using namespace std;
 
@@ -101,14 +102,32 @@ int main() {
     planeShader.setMat4("projection", proj);
     
 
+    Framebuffer fb(512, 512);
+    fb.createTexture("renderedTextureId", GL_RGB);
+    fb.createDepthBuffer();
+    fb.configureFramebuffer();
+
+
+    // planeShader.setInt(fb.getTexture().type, fb.getTexture().textureUnit);
+    planeMesh.addTexture(fb.getTexture());
+
+
 
     while(!glfwWindowShouldClose(windowPtr)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        fb.setAsRenderTarget();
+        glClearColor(1, 0, 0, 1); // teapot background color;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // drawing should be here.
         teapotShader.useProgram();
         teapotMesh.draw(teapotShader);
 
+        glGenerateTextureMipmap(fb.getTexture().id); // generate mipmap for rendered texture.
+
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glViewport(0, 0, 600, 600);
+        glClearColor(0, 0, 0, 1); // plane background color;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         planeShader.useProgram();
         planeMesh.draw(planeShader);
 
@@ -196,12 +215,7 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
             lastX = (int)xpos;
             lastY = (int)ypos;
         }
-        // if(button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-        //     cout << "mouse sag buton release tetiklendi. " << endl;
-        // }
-        // if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-        //     cout << "left one selammsss release tetiklendik. " << endl;
-        // }
+
     }
 }
 
@@ -222,11 +236,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
         if(yoffset == 1) { // zoom in.
 
-            // fovY -= (float)0.5f;
-            // if(fovY<1) fovY = 1.0f;
-            // glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-            // teapotShaderPtr->useProgram();
-            // teapotShaderPtr->setMat4("projection", proj);
+            
             if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
                 fovY_plane -= 0.5f;
                 if(fovY_plane<=1) fovY_plane = 1.0f;
@@ -245,11 +255,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
         } else if(yoffset == -1) { // zoom out.
 
-            // fovY += (float)0.5f;
-            // if(fovY>=88) fovY = 88.0f;
-            // glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-            // teapotShaderPtr->useProgram();
-            // teapotShaderPtr->setMat4("projection", proj);
+
 
             if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
                 fovY_plane += 0.5f;
@@ -267,8 +273,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
             }
 
-            // planeShaderPtr->useProgram();
-            // planeShaderPtr->setMat4("projection", proj);
+
 
         }
 
@@ -286,8 +291,7 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
             float rotate_y_axis{}, rotate_x_axis{};
             rotate_y_axis = (float)diffX/10.0f;
             rotate_x_axis = (float)diffY/10.0f;
-            // rx = glm::rotate(rx, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
-            // ry = glm::rotate(ry, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+
 
             if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
                 rx_plane = glm::rotate(rx_plane, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
@@ -304,7 +308,6 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
             // cout << "(x: "<< x <<  ", y: "<< y << ")" << endl;
             float translate_z{};
             translate_z = (float)diffY/30.0f;
-            // tz = glm::translate(tz, glm::vec3(0, 0, -translate_z));
 
             if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
                 tz_plane = glm::translate(tz_plane, glm::vec3(0, 0, -translate_z));

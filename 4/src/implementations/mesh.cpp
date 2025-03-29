@@ -4,6 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+int Mesh::active_texture_unit_count{0};
 
 Mesh::Mesh(const string& objPath) {
 
@@ -29,10 +30,36 @@ glm::mat4 Mesh::getModelMatrix() {
     return this->modelMatrix;
 }
 
+Texture Mesh::textureCreator(int width, int height, const string& type, GLenum format) {
+    Texture tex;
+    tex.type = string(type);
+    tex.textureUnit = Mesh::active_texture_unit_count;
+    Mesh::active_texture_unit_count++;
+
+    glActiveTexture(GL_TEXTURE0 + tex.textureUnit);
+    glGenTextures(1, &tex.id);
+    glBindTexture(GL_TEXTURE_2D, tex.id);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+
+    // glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    return tex;
+}
+
+void Mesh::addTexture(Texture& tex) {
+    this->textures.push_back(tex);
+}
+
 void Mesh::myTextureLoader(const string& path, const string& type) {
     Texture tex;
     tex.type = string(type);
-    tex.textureUnit = this->textures.size();
+    // tex.textureUnit = this->textures.size();
+    tex.textureUnit = Mesh::active_texture_unit_count;
+    Mesh::active_texture_unit_count++;
     glActiveTexture(GL_TEXTURE0 + tex.textureUnit);
 
     int width, height, numberOfChannels;
