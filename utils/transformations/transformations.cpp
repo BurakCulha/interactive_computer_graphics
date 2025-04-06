@@ -66,3 +66,17 @@ glm::mat4 perspectiveProjection_constRLTB(float fovY, float aspectRatio, float f
 
 
 
+
+glm::mat4 reflectOverPlaneMatrix(float a, float b, float c, float d) {
+/**
+ * aciklama yazacagim. buraya wikipediadan yazacagim.
+ */
+
+    glm::vec4 col1(1 - (2 * a * a), -2 * a * b, -2 * a *c, 0);
+    glm::vec4 col2(-2 * a * b, 1 - (2 * b * b), -2 * b *c, 0);
+    glm::vec4 col3(-2 * a *c, -2 * b * c, 1 - (2 * c * c), 0);
+    glm::vec4 col4(-2 * a * d, -2 * b * d, -2 * c * d, 1);
+
+    glm::mat4 result(col1, col2, col3, col4);
+    return result;
+}

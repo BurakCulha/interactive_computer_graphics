@@ -9,4 +9,5 @@ glm::mat4 orthographicProjection(float near, float far, float top, float bottom,
 glm::mat4 perspectiveProjection_constRLTB(float fovY, float aspectRatio, float far);
 glm::mat4 perspectiveProjection_constNear(float fovY, float aspectRatio, float near, float far);
 
+glm::mat4 reflectOverPlaneMatrix(float a, float b, float c, float d);
 #endif
