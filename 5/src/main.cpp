@@ -1,8 +1,9 @@
+#include "glad/glad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include <GL/glew.h>
+// #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include "transformations.hpp"
@@ -33,6 +34,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 int main() {
 
+    cout << "am i here?" << endl;
     if(!glfwInit()) {
         cout << "glfw could not be initialized. " << endl;
         return -1;
@@ -53,16 +55,23 @@ int main() {
     glfwSetScrollCallback(windowPtr, scroll_callback);
     glfwSetCursorPosCallback(windowPtr, cursor_position_callback);
 
-    const char* version = (const char*)glGetString(GL_VERSION);
-    std::cout << "OpenGL Version: " << version << std::endl;
+    // const char* version = (const char*)glGetString(GL_VERSION);
+    // std::cout << "OpenGL Version: " << version << std::endl;
 
-    glewExperimental = GL_TRUE;
-    if(glewInit()) { //!= GLEW_OK) {
-        cout << "glew could not be initialized. " << endl;
-        cout << "GLEW--->INITIALIZATION::ERROR " << endl;
-        cout << glewGetErrorString(glewInit()) << endl;
-        cout << glewInit() << endl;
-        return -3;
+    // glewExperimental = GL_TRUE;
+    // if(glewInit()) { //!= GLEW_OK) {
+    //     cout << "glew could not be initialized. " << endl;
+    //     cout << "GLEW--->INITIALIZATION::ERROR " << endl;
+    //     cout << glewGetErrorString(glewInit()) << endl;
+    //     cout << glewInit() << endl;
+    //     return -3;
+    // }
+
+    // glad init;
+    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        cout << "failed to initialize glad" << endl;
+        return -1; 
+        glfwTerminate();
     }
 
     IMGUI_CHECKVERSION();

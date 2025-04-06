@@ -19,6 +19,10 @@ set(imgui_dir ${project_dir}/../utils/imguiLib)
 file(GLOB imgui_sources ${imgui_dir}/*.cpp)
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLEW)
 
+set(glad_dir ${project_dir}/../utils/glad)
+set(glad_sources ${glad_dir}/glad.c)
+
+
 
 
 set(project_sources 
@@ -29,6 +33,7 @@ set(project_sources
         ${project_implementations_dir}/framebuffer.cpp
         ${transformations_sources}
         ${imgui_sources}
+        ${glad_sources}
 )
 
 
@@ -45,8 +50,8 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
 
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
+# find_package(GLEW REQUIRED)
+# include_directories(${GLEW_INCLUDE_DIRS})
 
 find_package(glm REQUIRED)
 # include_directories(${GLM_INCLUDE_DIRS})
@@ -58,6 +63,7 @@ include_directories(${transformations_dir})
 include_directories(${project_include_dir})
 include_directories(${stbi_include_dir})
 include_directories(${imgui_dir})
+include_directories(${glad_dir})
 
 
 add_executable(${PROJECT_NAME} ${project_sources})
@@ -66,7 +72,7 @@ target_link_libraries(
                       ${PROJECT_NAME} 
                       ${GLUT_LIBRARIES}
                       ${OPENGL_LIBRARIES} 
-                      ${GLEW_LIBRARIES} 
+                  #     ${GLEW_LIBRARIES} # stopped working suddenly. 
                 #       ${GLM_LIBRARIES} # not needed. i did wrong so far.
                       glfw
 )
