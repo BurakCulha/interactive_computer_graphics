@@ -22,7 +22,7 @@ ShaderProgram *teapotShaderPtr, *planeShaderPtr, *giantTrianglePtr;
 
 int lastX{}, lastY{};
 
-glm::mat4 rx(1), ry(1), tz(1), transformation_in_camera_frame(1);
+glm::mat4 rx(1), ry(1), tz(1), transformation_in_camera_frame(1), reflection_matrix(1);
 glm::mat4 rx_plane(1), ry_plane(1), tz_plane(1), transformation_in_camera_frame_plane(1);
 
 
@@ -104,6 +104,8 @@ int main() {
     // teapotMesh.centerTheMesh();
     teapotShader.setMat4("model", teapotMesh.getModelMatrix());
     teapotShader.setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
+    reflection_matrix = reflectOverPlaneMatrix(0, 1, 0, 0);
+    teapotShader.setMat4("reflection_matrix", reflection_matrix);
 
 
     ShaderProgram planeShader("../glsl/planeVS.vert", "../glsl/planeFS.frag");
@@ -171,6 +173,10 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // drawing should be here.
         teapotShader.useProgram();
+        teapotShader.setMat4("reflection_matrix", reflection_matrix);
+        teapotMesh.draw(teapotShader);
+
+        teapotShader.setMat4("reflection_matrix", glm::mat4(1));
         teapotMesh.draw(teapotShader);
 
         // glGenerateTextureMipmap(fb.getTexture().id); // generate mipmap for rendered texture.
