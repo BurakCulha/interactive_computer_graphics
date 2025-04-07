@@ -1,22 +1,19 @@
-## environment mapping project is done.    
+## environment mapping project is done with cubemap texture.    
 
 ## initializes opengl context via glfw. 
 
 ## loads teapot and plane obj using a simple custom obj loader.
 
-## left mouse button adjusts camera angles in world frame.  
+## uses render to texture for displaying environment reflections on the plane.   
 
-## right mouse button translates camera to the teapot object in world frame.
+## left mouse button transforms the teapot object in camera frame.  
 
-## if ALT key is pressed right/left mouse buttons controls same parameters for rendering plane. 
+## right mouse button translates the teapot object in camera frame.  
 
-## zoom in and out via mouse wheel.
+## zoom in and out via mouse wheel.   
 
-## uses imgui and glfw for interaction. 
+## if ALT key is pressed you can transform only plane and environment.    
 
-## you can set the color of the plane, shading parameters and lighting direction for teapot object via imgui.   
-  
-
-
+## if CTRL key is pressed you can transform teapot, plane and environment.       
 
 

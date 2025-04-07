@@ -28,10 +28,13 @@ void main() {
     // fragColor = diffuseColorFunction() + fragColor * 0.0001 * vec4(specular_color * ambient_color, 1);
     // fragColor = specularColorFunction() + 0.00001 * fragColor;
 
-    fragColor = texture(texture_diffuse, f_texCoord) * (diffuseColorFunction() + specularColorFunction()) + 0.5 * vec4(ambient_color,0);
+
+    // fragColor = texture(texture_diffuse, f_texCoord) * (diffuseColorFunction() + specularColorFunction()) + 0.5 * vec4(ambient_color,0);
+
     // fragColor = fragColor * 0.001 + vec4(1, 1, 0, 1);
 
-    fragColor = calculateEnvironmentColor() + fragColor*0.001;
+    // fragColor = vec4(0.73, 0.73, 0.73, 1.0) * calculateEnvironmentColor() + fragColor*0.00001;
+    fragColor = vec4(0.73, 0.73, 0.73, 1.0) * calculateEnvironmentColor();
 
 }
 

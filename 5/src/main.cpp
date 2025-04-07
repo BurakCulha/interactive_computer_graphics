@@ -179,7 +179,9 @@ int main() {
         fb.setAsRenderTarget();
         glClearColor(0, 0, 0, 0); // teapot background color;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
         // drawing should be here.
+
         teapotShader.useProgram();
         teapotShader.setMat4("reflection_matrix", reflection_matrix);
         teapotMesh.draw(teapotShader);
@@ -200,10 +202,11 @@ int main() {
         planeShader.useProgram();
         planeMesh.draw(planeShader);
 
-
-
+        // this is for optimizing.
+        glDepthMask(GL_FALSE); 
         giantTriangleShader.useProgram();
         giantTriangleMesh.draw(giantTriangleShader);
+        glDepthMask(GL_TRUE);
 
         teapotShader.useProgram();
 
@@ -218,33 +221,33 @@ int main() {
 
         ImGui::Begin("imgui window for input for shading project");
         // // gui elements here.
-        static glm::vec3 light_dir(1.0f, 1.0f, 1.0f);
+        // static glm::vec3 light_dir(1.0f, 1.0f, 1.0f);
         
-        static glm::vec2 alpha_beta(0, 0);
-        ImGui::SliderFloat2("light direction", &alpha_beta.x, -89, 89);
-        // spherical coordinates.
-        light_dir.y = glm::sin(glm::radians(alpha_beta.x));
-        light_dir.z = glm::cos(glm::radians(alpha_beta.x)) * glm::cos(glm::radians(alpha_beta.y));
-        light_dir.x = glm::cos(glm::radians(alpha_beta.x)) * glm::sin(glm::radians(alpha_beta.y));
+        // static glm::vec2 alpha_beta(0, 0);
+        // ImGui::SliderFloat2("light direction", &alpha_beta.x, -89, 89);
+        // // spherical coordinates.
+        // light_dir.y = glm::sin(glm::radians(alpha_beta.x));
+        // light_dir.z = glm::cos(glm::radians(alpha_beta.x)) * glm::cos(glm::radians(alpha_beta.y));
+        // light_dir.x = glm::cos(glm::radians(alpha_beta.x)) * glm::sin(glm::radians(alpha_beta.y));
 
-        // cylindirical coordinates.
-        // light_dir.y = glm::tan(glm::radians(alpha_beta.x));
-        // light_dir.z = glm::cos(glm::radians(alpha_beta.y));
-        // light_dir.x = glm::sin(glm::radians(alpha_beta.y));
+        // // cylindirical coordinates.
+        // // light_dir.y = glm::tan(glm::radians(alpha_beta.x));
+        // // light_dir.z = glm::cos(glm::radians(alpha_beta.y));
+        // // light_dir.x = glm::sin(glm::radians(alpha_beta.y));
 
-        teapotShader.setVec3("light_direction", light_dir);
+        // teapotShader.setVec3("light_direction", light_dir);
 
-        static glm::vec3 ambient_color(0.5), diffuse_color(0.5), specular_color(1);
-        ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
-        ImGui::SliderFloat3("diffuse color: ", &diffuse_color.x, 0, 1);
-        ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
-        teapotShader.setVec3("ambient_color", ambient_color);
-        teapotShader.setVec3("specular_color", specular_color);
-        teapotShader.setVec3("diffuse_color", diffuse_color);
+        // static glm::vec3 ambient_color(0.5), diffuse_color(0.5), specular_color(1);
+        // ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
+        // ImGui::SliderFloat3("diffuse color: ", &diffuse_color.x, 0, 1);
+        // ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
+        // teapotShader.setVec3("ambient_color", ambient_color);
+        // teapotShader.setVec3("specular_color", specular_color);
+        // teapotShader.setVec3("diffuse_color", diffuse_color);
 
-        static float shininess{25};
-        ImGui::SliderFloat("shininess", &shininess, 0, 250);
-        teapotShader.setFloat("shininess", shininess);
+        // static float shininess{25};
+        // ImGui::SliderFloat("shininess", &shininess, 0, 250);
+        // teapotShader.setFloat("shininess", shininess);
 
         ImGui::End();
 
@@ -325,6 +328,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
 
+                giantTrianglePtr->useProgram();
+                giantTrianglePtr->setMat4("u_invProj", glm::inverse(proj_plane));
+
             } else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) { // set both plane and teapot.
                 fovY_plane -= 0.5f;
                 if(fovY_plane<=1) fovY_plane = 1.0f;
@@ -332,10 +338,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
 
-                cout << "yazdi mi? begin zoom in " << endl;
                 giantTrianglePtr->useProgram();
                 giantTrianglePtr->setMat4("u_invProj", glm::inverse(proj_plane));
-                cout << "yazdi mi? end zoom in" << endl;
 
                 fovY -= (float)0.5f;
                 if(fovY<1) fovY = 1.0f;
@@ -362,6 +366,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
 
+                giantTrianglePtr->useProgram();
+                giantTrianglePtr->setMat4("u_invProj", glm::inverse(proj_plane));
+
             } else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) { // set both plane and teapot.
 
                 fovY += (float)0.5f;
@@ -376,10 +383,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
 
-                cout << "yazdi mi? begin zoom out " << endl;
                 giantTrianglePtr->useProgram();
                 giantTrianglePtr->setMat4("u_invProj", glm::inverse(proj_plane));
-                cout << "yazdi mi? end zoom out " << endl;
 
             } else {
                 fovY += (float)0.5f;
