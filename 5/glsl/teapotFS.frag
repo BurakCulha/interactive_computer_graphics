@@ -1,5 +1,6 @@
 #version 450 core
 
+uniform samplerCube environmentMap;
 uniform sampler2D texture_diffuse;
 uniform vec3 light_direction;
 uniform vec3 ambient_color, diffuse_color, specular_color;
@@ -13,6 +14,7 @@ out vec4 fragColor;
 
 vec4 specularColorFunction();
 vec4 diffuseColorFunction();
+vec4 calculateEnvironmentColor();
 void main() {
     // fragColor = vec4(1.0, 0.0, 0.0, 1.0);
 
@@ -27,6 +29,8 @@ void main() {
 
     fragColor = texture(texture_diffuse, f_texCoord) * (diffuseColorFunction() + specularColorFunction()) + 0.5 * vec4(ambient_color,0);
     // fragColor = fragColor * 0.001 + vec4(1, 1, 0, 1);
+
+    fragColor = calculateEnvironmentColor() + fragColor*0.001;
 
 }
 
@@ -61,4 +65,17 @@ vec4 specularColorFunction() {
     res = intensity * (1/cosTheta) * K_s * pow(cosPhi, shininess);
 
     return res;
+}
+
+vec4 calculateEnvironmentColor() {
+    vec3 unit_normal = normalize(f_nrm);
+    vec3 unit_reflection_dir = normalize(f_pos);
+    float cosTheta = dot(unit_normal, -unit_reflection_dir);
+    vec3 projectedVector = cosTheta * unit_normal;
+    unit_reflection_dir = 2 * projectedVector + unit_reflection_dir;
+    
+    vec4 col = texture(environmentMap, unit_reflection_dir);
+
+    return col;
+
 }

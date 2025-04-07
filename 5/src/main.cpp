@@ -94,7 +94,7 @@ int main() {
     Mesh teapotMesh("../objFiles/teapot.obj");
     teapotMesh.myTextureLoader("../images/brick.png", "texture_diffuse");
 
-    Camera camera(glm::vec3(0, 3, 4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Camera camera(glm::vec3(0, 0.2, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     glm::mat4 view = camera.getLookAtMatrix();
     glm::mat4 proj = perspectiveProjection_constNear(45.0f, 1.0f, -1.0f, -1000.0f);
 
@@ -143,6 +143,14 @@ int main() {
     // cout << "proj: " << glm::to_string(proj) << endl;
     // cout << "invProj: " << glm::to_string(glm::inverse(proj)) << endl;
 
+    GLuint environmentTextureUnitId = giantTriangleMesh.cubeMapTextureUnitId;
+
+    planeShader.useProgram();
+    planeShader.setInt("environmentMap", environmentTextureUnitId);
+
+    teapotShader.useProgram();
+    teapotShader.setInt("environmentMap", environmentTextureUnitId);
+
 
 
     // Framebuffer fb(512, 512);
@@ -162,8 +170,8 @@ int main() {
         // glClearColor(0, 0, 0, 1); // teapot background color;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // drawing should be here.
-        // teapotShader.useProgram();
-        // teapotMesh.draw(teapotShader);
+        teapotShader.useProgram();
+        teapotMesh.draw(teapotShader);
 
         // glGenerateTextureMipmap(fb.getTexture().id); // generate mipmap for rendered texture.
 
@@ -171,53 +179,60 @@ int main() {
         // glViewport(0, 0, 600, 600);
         // glClearColor(0, 0, 0, 1); // plane background color;
         // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // planeShader.useProgram();
-        // planeMesh.draw(planeShader);
+        planeShader.useProgram();
+        planeMesh.draw(planeShader);
 
 
         giantTriangleShader.useProgram();
         giantTriangleMesh.draw(giantTriangleShader);
 
-        // teapotShader.useProgram();
+        teapotShader.useProgram();
 
 
         // drawing ends.
 
 
         ///////////////////////// imgui things begin. ////////////////////////
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplGlfw_NewFrame();
-        // ImGui::NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-        // ImGui::Begin("imgui window for input for shading project");
-        // // // gui elements here.
-        // static glm::vec3 light_dir(1.0f, 1.0f, 1.0f);
+        ImGui::Begin("imgui window for input for shading project");
+        // // gui elements here.
+        static glm::vec3 light_dir(1.0f, 1.0f, 1.0f);
         
-        // static glm::vec2 alpha_beta(0, 0);
-        // ImGui::SliderFloat2("light direction", &alpha_beta.x, -90, 90);
-        // light_dir.y = glm::sin(glm::radians(alpha_beta.x));
-        // light_dir.z = glm::cos(glm::radians(alpha_beta.x)) * glm::cos(glm::radians(alpha_beta.y));
-        // light_dir.x = glm::cos(glm::radians(alpha_beta.x)) * glm::sin(glm::radians(alpha_beta.y));
-        // teapotShader.setVec3("light_direction", light_dir);
+        static glm::vec2 alpha_beta(0, 0);
+        ImGui::SliderFloat2("light direction", &alpha_beta.x, -89, 89);
+        // spherical coordinates.
+        light_dir.y = glm::sin(glm::radians(alpha_beta.x));
+        light_dir.z = glm::cos(glm::radians(alpha_beta.x)) * glm::cos(glm::radians(alpha_beta.y));
+        light_dir.x = glm::cos(glm::radians(alpha_beta.x)) * glm::sin(glm::radians(alpha_beta.y));
 
-        // static glm::vec3 ambient_color(0.5), diffuse_color(0.5), specular_color(1);
-        // ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
-        // ImGui::SliderFloat3("diffuse color: ", &diffuse_color.x, 0, 1);
-        // ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
-        // teapotShader.setVec3("ambient_color", ambient_color);
-        // teapotShader.setVec3("specular_color", specular_color);
-        // teapotShader.setVec3("diffuse_color", diffuse_color);
+        // cylindirical coordinates.
+        // light_dir.y = glm::tan(glm::radians(alpha_beta.x));
+        // light_dir.z = glm::cos(glm::radians(alpha_beta.y));
+        // light_dir.x = glm::sin(glm::radians(alpha_beta.y));
 
-        // static float shininess{25};
-        // ImGui::SliderFloat("shininess", &shininess, 0, 250);
-        // teapotShader.setFloat("shininess", shininess);
+        teapotShader.setVec3("light_direction", light_dir);
 
-        // ImGui::End();
+        static glm::vec3 ambient_color(0.5), diffuse_color(0.5), specular_color(1);
+        ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
+        ImGui::SliderFloat3("diffuse color: ", &diffuse_color.x, 0, 1);
+        ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
+        teapotShader.setVec3("ambient_color", ambient_color);
+        teapotShader.setVec3("specular_color", specular_color);
+        teapotShader.setVec3("diffuse_color", diffuse_color);
+
+        static float shininess{25};
+        ImGui::SliderFloat("shininess", &shininess, 0, 250);
+        teapotShader.setFloat("shininess", shininess);
+
+        ImGui::End();
 
 
-        // ImGui::Render();
-        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        // ///////////////////////// imgui things end. ////////////////////////
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ///////////////////////// imgui things end. ////////////////////////
 
 
         glfwSwapBuffers(windowPtr);
