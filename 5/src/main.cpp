@@ -94,7 +94,7 @@ int main() {
     Mesh teapotMesh("../objFiles/teapot.obj");
     teapotMesh.myTextureLoader("../images/brick.png", "texture_diffuse");
 
-    Camera camera(glm::vec3(0, 0.2, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Camera camera(glm::vec3(0, 0.2, 1.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     glm::mat4 view = camera.getLookAtMatrix();
     glm::mat4 proj = perspectiveProjection_constNear(45.0f, 1.0f, -1.0f, -1000.0f);
 
@@ -306,6 +306,19 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
 
+            } else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) { // set both plane and teapot.
+                fovY_plane -= 0.5f;
+                if(fovY_plane<=1) fovY_plane = 1.0f;
+                glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
+                planeShaderPtr->useProgram();
+                planeShaderPtr->setMat4("projection", proj_plane);
+
+                fovY -= (float)0.5f;
+                if(fovY<1) fovY = 1.0f;
+                glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+                teapotShaderPtr->useProgram();
+                teapotShaderPtr->setMat4("projection", proj);
+
             } else {
                 fovY -= (float)0.5f;
                 if(fovY<1) fovY = 1.0f;
@@ -318,8 +331,21 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
         } else if(yoffset == -1) { // zoom out.
 
 
-
             if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+                fovY_plane += 0.5f;
+                if(fovY_plane>=88) fovY_plane = 88.0f;
+                glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
+                planeShaderPtr->useProgram();
+                planeShaderPtr->setMat4("projection", proj_plane);
+
+            } else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) { // set both plane and teapot.
+
+                fovY += (float)0.5f;
+                if(fovY>=88) fovY = 88.0f;
+                glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
+                teapotShaderPtr->useProgram();
+                teapotShaderPtr->setMat4("projection", proj);
+
                 fovY_plane += 0.5f;
                 if(fovY_plane>=88) fovY_plane = 88.0f;
                 glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
@@ -334,7 +360,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 teapotShaderPtr->setMat4("projection", proj);
 
             }
-
 
 
         }
@@ -354,8 +379,12 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
             rotate_y_axis = (float)diffX/10.0f;
             rotate_x_axis = (float)diffY/10.0f;
 
-
-            if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+            if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+                rx_plane = glm::rotate(rx_plane, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
+                ry_plane = glm::rotate(ry_plane, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+                rx = glm::rotate(rx, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
+                ry = glm::rotate(ry, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
+            } else if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
                 rx_plane = glm::rotate(rx_plane, glm::radians(rotate_y_axis), glm::vec3(0, 1, 0));
                 ry_plane = glm::rotate(ry_plane, glm::radians(rotate_x_axis), glm::vec3(1, 0, 0));
             } else {
@@ -371,7 +400,10 @@ void cursor_position_callback(GLFWwindow* window, double x, double y) {
             float translate_z{};
             translate_z = (float)diffY/30.0f;
 
-            if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+            if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+                tz_plane = glm::translate(tz_plane, glm::vec3(0, 0, -translate_z));
+                tz = glm::translate(tz, glm::vec3(0, 0, -translate_z));
+            } else if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
                 tz_plane = glm::translate(tz_plane, glm::vec3(0, 0, -translate_z));
             } else {
                 tz = glm::translate(tz, glm::vec3(0, 0, -translate_z));
