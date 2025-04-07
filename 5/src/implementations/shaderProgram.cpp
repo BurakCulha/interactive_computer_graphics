@@ -91,6 +91,8 @@ bool ShaderProgram::isBound() {
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
     if (prog != this->programId) {
         this->inUse = false;
+
+        cout << "not in use: " << endl;
     }
     return this->inUse;
 }
@@ -101,6 +103,7 @@ void ShaderProgram::setBool(const string& name, bool val) {
     } else {
         cout << "program object is not bound." << endl;
         cout << "in setBool() " << endl;
+        cout << "trying to set: " << name << endl;
     }
 }
 
@@ -110,6 +113,7 @@ void ShaderProgram::setFloat(const string& name, float val) {
     } else {
         cout << "program object is not bound." << endl;
         cout << "in setfloat() " << endl;
+        cout << "trying to set: " << name << endl;
     }
 }
 
@@ -119,6 +123,7 @@ void ShaderProgram::setInt(const string& name, int val) {
     } else {
         cout << "program object is not bound." << endl;
         cout << "in setint() " << endl;
+        cout << "trying to set: " << name << endl;
     }
 }
 
@@ -135,6 +140,7 @@ void ShaderProgram::setMat4(const string& name, const glm::mat4& val) {
     } else {
         cout << "program object is not bound." << endl;
         cout << "in setmat4() " << endl;
+        cout << "trying to set: " << name << endl;
     }
 
 }
@@ -152,6 +158,7 @@ void ShaderProgram::setMat3(const string& name, const glm::mat3& val) {
     } else {
         cout << "program object is not bound. " << endl;
         cout << "in setMat3() " << endl;
+        cout << "trying to set: " << name << endl;
     }
 }
 
@@ -169,6 +176,7 @@ void ShaderProgram::setVec2(const string& name, const glm::vec2& val) {
     } else {
         cout << "program object is not bound. " << endl;
         cout << "in setVec2() " << endl;
+        cout << "trying to set: " << name << endl;
     }   
 }
 
@@ -186,6 +194,7 @@ void ShaderProgram::setVec3(const string& name, const glm::vec3& val) {
     } else {
         cout << "program object is not bound. " << endl;
         cout << "in setVec3() " << endl;
+        cout << "trying to set: " << name << endl;
     }   
 }
 
@@ -203,6 +212,7 @@ void ShaderProgram::setVec4(const string& name, const glm::vec4& val) {
     } else {
         cout << "program object is not bound. " << endl;
         cout << "in setVec4() " << endl;
+        cout << "trying to set: " << name << endl;
     }   
 }
 

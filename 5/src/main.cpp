@@ -94,9 +94,9 @@ int main() {
     Mesh teapotMesh("../objFiles/teapot.obj");
     teapotMesh.myTextureLoader("../images/brick.png", "texture_diffuse");
 
-    Camera camera(glm::vec3(0, 0.2, 1.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Camera camera(glm::vec3(0, 0.5, 2.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     glm::mat4 view = camera.getLookAtMatrix();
-    glm::mat4 proj = perspectiveProjection_constNear(45.0f, 1.0f, -1.0f, -1000.0f);
+    glm::mat4 proj = perspectiveProjection_constNear(25.0f, 1.0f, -1.0f, -1000.0f);
 
     teapotShader.setMat4("projection", proj);
     teapotShader.setMat4("view", view);
@@ -114,6 +114,7 @@ int main() {
 
     Mesh planeMesh("../objFiles/plane_2.obj");
     planeMesh.transformMesh(glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)));
+    planeMesh.transformMesh(glm::scale(glm::mat4(1), glm::vec3(2.0f)));
     planeShader.setMat4("model", planeMesh.getModelMatrix());
     planeShader.setMat4("transformation_in_camera_frame", transformation_in_camera_frame);
     planeShader.setMat4("view", view);
@@ -124,6 +125,7 @@ int main() {
 
     ShaderProgram giantTriangleShader("../glsl/environmentMap.vert", "../glsl/environmentMap.frag");
     giantTriangleShader.useProgram();
+    giantTrianglePtr = &giantTriangleShader;
 
     Mesh giantTriangleMesh("../objFiles/environmentMapPlane.obj");
     // Mesh giantTriangleMesh("../objFiles/giant_triangle.obj");
@@ -149,16 +151,22 @@ int main() {
 
     planeShader.useProgram();
     planeShader.setInt("environmentMap", environmentTextureUnitId);
+    planeShader.setVec2("textureResolution", glm::vec2(600, 600));
 
     teapotShader.useProgram();
     teapotShader.setInt("environmentMap", environmentTextureUnitId);
 
 
 
-    // Framebuffer fb(512, 512);
-    // fb.createTexture("renderedTextureId", GL_RGB);
-    // fb.createDepthBuffer();
-    // fb.configureFramebuffer();
+    Framebuffer fb(600, 600);
+    fb.createTexture("renderedTextureId", GL_RGBA);
+    fb.createDepthBuffer();
+    fb.configureFramebuffer();
+
+
+    planeShader.useProgram();
+    planeShader.setInt(fb.getTexture().type, fb.getTexture().textureUnit);
+    planeMesh.addTexture(fb.getTexture());
 
 
     // planeShader.setInt(fb.getTexture().type, fb.getTexture().textureUnit);
@@ -168,25 +176,30 @@ int main() {
 
     while(!glfwWindowShouldClose(windowPtr)) {
 
-        // fb.setAsRenderTarget();
-        // glClearColor(0, 0, 0, 1); // teapot background color;
+        fb.setAsRenderTarget();
+        glClearColor(0, 0, 0, 0); // teapot background color;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // drawing should be here.
         teapotShader.useProgram();
         teapotShader.setMat4("reflection_matrix", reflection_matrix);
         teapotMesh.draw(teapotShader);
 
+
+        glGenerateTextureMipmap(fb.getTexture().id); // generate mipmap for rendered texture.
+
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glViewport(0, 0, 600, 600);
+        glClearColor(0, 0, 0, 1); // plane background color;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+        teapotShader.useProgram();
         teapotShader.setMat4("reflection_matrix", glm::mat4(1));
         teapotMesh.draw(teapotShader);
 
-        // glGenerateTextureMipmap(fb.getTexture().id); // generate mipmap for rendered texture.
-
-        // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        // glViewport(0, 0, 600, 600);
-        // glClearColor(0, 0, 0, 1); // plane background color;
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         planeShader.useProgram();
         planeMesh.draw(planeShader);
+
 
 
         giantTriangleShader.useProgram();
@@ -299,8 +312,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     if(!ImGui::GetIO().WantCaptureMouse) {
 
         cout << "y offset: " << yoffset << endl;
-        static float fovY{45};
-        static float fovY_plane{45};
+        static float fovY{25};
+        static float fovY_plane{25};
 
         if(yoffset == 1) { // zoom in.
 
@@ -318,6 +331,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
+
+                cout << "yazdi mi? begin zoom in " << endl;
+                giantTrianglePtr->useProgram();
+                giantTrianglePtr->setMat4("u_invProj", glm::inverse(proj_plane));
+                cout << "yazdi mi? end zoom in" << endl;
 
                 fovY -= (float)0.5f;
                 if(fovY<1) fovY = 1.0f;
@@ -357,6 +375,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
                 glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
                 planeShaderPtr->useProgram();
                 planeShaderPtr->setMat4("projection", proj_plane);
+
+                cout << "yazdi mi? begin zoom out " << endl;
+                giantTrianglePtr->useProgram();
+                giantTrianglePtr->setMat4("u_invProj", glm::inverse(proj_plane));
+                cout << "yazdi mi? end zoom out " << endl;
 
             } else {
                 fovY += (float)0.5f;
