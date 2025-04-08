@@ -8,7 +8,5 @@ out vec4 fragColor;
 void main() {
 
     fragColor = texture(environmentMap, direction);
-    // fragColor = fragColor*0.00001 + vec4(direction, 1);
-    
 
 }

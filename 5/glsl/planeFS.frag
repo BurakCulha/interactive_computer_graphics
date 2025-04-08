@@ -3,8 +3,7 @@
 uniform sampler2D renderedTextureId;
 uniform samplerCube environmentMap;
 uniform vec2 textureResolution;
-in vec2 f_texCoord;
-// in vec3 f_pos, f_nrm;
+
 in vec3 f_nrm;
 in vec4 f_pos;
 out vec4 fragColor;
@@ -12,14 +11,6 @@ out vec4 fragColor;
 vec4 calculateEnvironmentColor();
 vec4 calculateRenderedTextureColor();
 void main() {
-
-
-
-    // fragColor = vec4(1, 1, 1, 1);
-    // fragColor = texture(renderedTextureId, f_texCoord);
-    // fragColor = vec4(1, 1, 1, 1);
-
-    // fragColor = calculateEnvironmentColor();
 
     vec4 textureColor = calculateRenderedTextureColor();
     vec4 environmentColor = calculateEnvironmentColor();
@@ -30,7 +21,6 @@ void main() {
         fragColor = textureColor;
     }
     
-    // fragColor = vec4(0, 0, 0, 1);
 }
 
 vec4 calculateRenderedTextureColor() {

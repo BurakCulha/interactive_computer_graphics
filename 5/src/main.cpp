@@ -15,7 +15,6 @@
 using namespace std;
 
 
-
 ShaderProgram *teapotShaderPtr, *planeShaderPtr, *giantTrianglePtr;
 
 
@@ -58,6 +57,7 @@ int main() {
     // const char* version = (const char*)glGetString(GL_VERSION);
     // std::cout << "OpenGL Version: " << version << std::endl;
 
+    // glew crashed suddenly. i could not solve. i moved to glad.
     // glewExperimental = GL_TRUE;
     // if(glewInit()) { //!= GLEW_OK) {
     //     cout << "glew could not be initialized. " << endl;
@@ -141,11 +141,7 @@ int main() {
     giantTriangleShader.setMat4("u_invProj", glm::inverse(proj));
     giantTriangleShader.setMat4("u_invView", glm::inverse(view));
 
-    // cout << "view: " << glm::to_string(view) << endl;
-    // cout << "invView: " << glm::to_string(glm::inverse(view)) << endl;
-    
-    // cout << "proj: " << glm::to_string(proj) << endl;
-    // cout << "invProj: " << glm::to_string(glm::inverse(proj)) << endl;
+
 
     GLuint environmentTextureUnitId = giantTriangleMesh.cubeMapTextureUnitId;
 
@@ -202,7 +198,7 @@ int main() {
         planeShader.useProgram();
         planeMesh.draw(planeShader);
 
-        // this is for optimizing.
+        // this mask is for optimizing.
         glDepthMask(GL_FALSE); 
         giantTriangleShader.useProgram();
         giantTriangleMesh.draw(giantTriangleShader);
@@ -220,37 +216,8 @@ int main() {
         ImGui::NewFrame();
 
         ImGui::Begin("imgui window for input for shading project");
-        // // gui elements here.
-        // static glm::vec3 light_dir(1.0f, 1.0f, 1.0f);
         
-        // static glm::vec2 alpha_beta(0, 0);
-        // ImGui::SliderFloat2("light direction", &alpha_beta.x, -89, 89);
-        // // spherical coordinates.
-        // light_dir.y = glm::sin(glm::radians(alpha_beta.x));
-        // light_dir.z = glm::cos(glm::radians(alpha_beta.x)) * glm::cos(glm::radians(alpha_beta.y));
-        // light_dir.x = glm::cos(glm::radians(alpha_beta.x)) * glm::sin(glm::radians(alpha_beta.y));
-
-        // // cylindirical coordinates.
-        // // light_dir.y = glm::tan(glm::radians(alpha_beta.x));
-        // // light_dir.z = glm::cos(glm::radians(alpha_beta.y));
-        // // light_dir.x = glm::sin(glm::radians(alpha_beta.y));
-
-        // teapotShader.setVec3("light_direction", light_dir);
-
-        // static glm::vec3 ambient_color(0.5), diffuse_color(0.5), specular_color(1);
-        // ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
-        // ImGui::SliderFloat3("diffuse color: ", &diffuse_color.x, 0, 1);
-        // ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
-        // teapotShader.setVec3("ambient_color", ambient_color);
-        // teapotShader.setVec3("specular_color", specular_color);
-        // teapotShader.setVec3("diffuse_color", diffuse_color);
-
-        // static float shininess{25};
-        // ImGui::SliderFloat("shininess", &shininess, 0, 250);
-        // teapotShader.setFloat("shininess", shininess);
-
         ImGui::End();
-
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
