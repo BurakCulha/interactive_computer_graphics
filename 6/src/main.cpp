@@ -54,10 +54,10 @@ int main() {
     }
     glfwMakeContextCurrent(windowPtr);
     glfwSetFramebufferSizeCallback(windowPtr, framebuffer_size_callback);
-    glfwSetKeyCallback(windowPtr, keybCallback);
-    glfwSetMouseButtonCallback(windowPtr, mouseCallback);
+    // glfwSetKeyCallback(windowPtr, keybCallback);
+    // glfwSetMouseButtonCallback(windowPtr, mouseCallback);
     glfwSetScrollCallback(windowPtr, scroll_callback);
-    glfwSetCursorPosCallback(windowPtr, cursor_position_callback);
+    // glfwSetCursorPosCallback(windowPtr, cursor_position_callback);
 
 
     // glad init;
@@ -226,7 +226,7 @@ int main() {
         // teapotShader.setMat4("model", glm::inverse(shadowLight.getLookAtMatrix()) * lightMesh.getModelMatrix());
         // teapotShader.setMat4("model", glm::inverse(shadowLight.getLookAtMatrix()));
         teapotShader.setMat4("model", lightOrienterMatrix);
-        teapotShader.setVec3("diffuse_color", glm::vec3(0, 0, 1));
+        teapotShader.setVec3("diffuse_color", glm::vec3(0, 0, 3));
         lightMesh.draw(teapotShader);
        
 
@@ -260,8 +260,8 @@ int main() {
         // teapotShader.setVec3("light_direction", light_dir);
 
         static glm::vec3 ambient_color(0.3), specular_color(1), cls(1);
-        ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
-        teapotShader.setVec3("ambient_color", ambient_color);
+        // ImGui::SliderFloat3("ambient color: ", &ambient_color.x, 0, 1);
+        // teapotShader.setVec3("ambient_color", ambient_color);
         ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
         teapotShader.setVec3("specular_color", specular_color);
         // ImGui::SliderFloat3("diffuse color: ", &diffuse_color.x, 0, 1);

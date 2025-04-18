@@ -52,7 +52,8 @@ void main() {
     // fragColor += diffuseColorFunction();
     // fragColor += specularColorFunction();
     // fragColor = blinnMaterialModel() * calculateShadow() + vec4(ambient_color, 1);
-    fragColor = blinnMaterialModel() * calculateShadow() + vec4(ambient_color * 0.00001 + diffuse_color * 0.3, 1);
+    // fragColor = blinnMaterialModel() * calculateShadow() + vec4(ambient_color * 0.00001 + diffuse_color * 0.3, 1);
+    fragColor = blinnMaterialModel() * calculateShadow() + vec4(diffuse_color * 0.3, 1);
 
 }
 
