@@ -33,6 +33,7 @@ glm::mat4 Mesh::getModelMatrix() {
     return this->modelMatrix;
 }
 
+// Texture Mesh::textureCreator(int width, int height, const string& type, GLenum format, GLenum typeName) {
 Texture Mesh::textureCreator(int width, int height, const string& type, GLenum format) {
     Texture tex;
     tex.type = string(type);
@@ -42,6 +43,7 @@ Texture Mesh::textureCreator(int width, int height, const string& type, GLenum f
     glActiveTexture(GL_TEXTURE0 + tex.textureUnit);
     glGenTextures(1, &tex.id);
     glBindTexture(GL_TEXTURE_2D, tex.id);
+    // glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, typeName, nullptr);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
     // glGenerateMipmap(GL_TEXTURE_2D);
