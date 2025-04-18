@@ -19,7 +19,7 @@ int lastX{}, lastY{};
 float fovY_shadowLight{45.0f}, fovY_scene{25.0};
 
 glm::mat4 rx(1), ry(1), tz(1), transformation_in_camera_frame(1);
-glm::mat4 rx_plane(1), ry_plane(1), tz_plane(1), transformation_in_camera_frame_plane(1);
+// glm::mat4 rx_plane(1), ry_plane(1), tz_plane(1), transformation_in_camera_frame_plane(1);
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
