@@ -12,5 +12,5 @@ out vec4 fragColor;
 
 void main() {
 
-    fragColor = texture(normalMapTexture, frag_tex);
+    fragColor = texture(normalMapTexture, frag_tex) + frag_pos * 0.000001;
 }

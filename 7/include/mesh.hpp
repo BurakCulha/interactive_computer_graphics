@@ -45,6 +45,8 @@ class Mesh {
         unordered_map<string, GLuint> meshAttribLocMap;
         glm::mat4 modelMatrix;
         static int active_texture_unit_count;
+
+        GLuint patch_vaoId, patch_pboId, patch_nboId, patch_texboId;
         vector<glm::vec3> unique_vertex_positions;
         vector<glm::vec3> unique_vertex_normals;
         vector<glm::vec2> unique_vertex_texCoords;
@@ -66,6 +68,9 @@ class Mesh {
         void transformMesh(const glm::mat4& mat);
         void textureCubeMapLoader(vector<string>& paths, const string& type);
         static Texture textureCreator(int width, int height, const string& type, GLenum format, GLenum typeName = GL_UNSIGNED_BYTE);
+        // void setupPatch
+        void setPatchSize(int n);
+        void drawPatches(ShaderProgram& shader);
 
         vector<glm::vec3> getUniqueVertexPositions();
         vector<glm::vec3> getUniqueVertexNormals();

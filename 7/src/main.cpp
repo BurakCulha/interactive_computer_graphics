@@ -75,9 +75,18 @@ int main() {
     // ShaderProgram quadTriangulator;
     // ShaderProgram quadShadow;
 
-    Mesh quadMesh("../objFiles/plane_2.obj");
+    Mesh quadMesh("../objFiles/quad.obj");
     quadMesh.myTextureLoader("../img/teapot_disp.png", "displacementMapTexture");
     quadMesh.myTextureLoader("../img/teapot_normal.png", "normalMapTexture.png");
+    quadMesh.setPatchSize(4);
+
+    quadDisplacer.setMat4("mv", glm::mat4(1));
+    quadDisplacer.setMat4("mvp", glm::mat4(1));
+
+    vector<glm::vec3> poss = quadMesh.getUniqueVertexPositions();
+    for(int i=0; i<poss.size(); i++) {
+        cout << i <<". vertex: " << glm::to_string(poss[i]) << endl;
+    }
 
 
 //////////////////////////////////////////////////////////////////////
@@ -198,7 +207,8 @@ int main() {
         ///////////
 
         quadDisplacer.useProgram();
-        quadMesh.draw(quadDisplacer);
+        // quadMesh.draw(quadDisplacer);
+        quadMesh.drawPatches(quadDisplacer);
 
         ///////////////////////// imgui things begin. ////////////////////////
         ImGui_ImplOpenGL3_NewFrame();
@@ -248,6 +258,15 @@ int main() {
         // shadowShader.setMat4("projection", shadowProjMatrix);
 
 
+        static glm::ivec4 outerLevels, innerLevels;
+        static float u_exaggerationFactor{};
+        ImGui::SliderInt4("outer levels: ", &outerLevels.x, 0, 100);
+        ImGui::SliderInt2("inner levels: ", &innerLevels.x, 0, 100);
+        ImGui::SliderFloat("exaggeration factor: ", &u_exaggerationFactor, 0.001, 0.4);
+        
+        quadDisplacer.setVec4int("OL", outerLevels);
+        quadDisplacer.setVec2int("IL", innerLevels);
+        quadDisplacer.setFloat("u_exaggerationFactor", u_exaggerationFactor);
 
 
 

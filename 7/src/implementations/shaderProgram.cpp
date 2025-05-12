@@ -220,6 +220,60 @@ void ShaderProgram::setVec4(const string& name, const glm::vec4& val) {
     }   
 }
 
+void ShaderProgram::setVec4int(const string& name, const glm::ivec4& val) {
+    if(this->isBound()) {
+        GLuint loc = glGetUniformLocation(this->programId, name.c_str());
+        if(loc != -1) {
+            glUniform4iv(loc, 1, &val.x);
+        } else {
+            cout << "there is no vec4 int uniform var named: " << name << endl;
+            cout << "exiting... " << endl;
+            exit(-5);
+        }
+
+    } else {
+        cout << "program object is not bound. " << endl;
+        cout << "in setVec4int() " << endl;
+        cout << "trying to set: " << name << endl;
+    }   
+}
+
+
+void ShaderProgram::setVec3int(const string& name, const glm::ivec3& val) {
+    if(this->isBound()) {
+        GLuint loc = glGetUniformLocation(this->programId, name.c_str());
+        if(loc != -1) {
+            glUniform3iv(loc, 1, &val.x);
+        } else {
+            cout << "there is no vec3 int uniform var named: " << name << endl;
+            cout << "exiting... " << endl;
+            exit(-5);
+        }
+
+    } else {
+        cout << "program object is not bound. " << endl;
+        cout << "in setVec3int() " << endl;
+        cout << "trying to set: " << name << endl;
+    }   
+}
+
+void ShaderProgram::setVec2int(const string& name, const glm::ivec2& val) {
+    if(this->isBound()) {
+        GLuint loc = glGetUniformLocation(this->programId, name.c_str());
+        if(loc != -1) {
+            glUniform2iv(loc, 1, &val.x);
+        } else {
+            cout << "there is no vec2 int uniform var named: " << name << endl;
+            cout << "exiting... " << endl;
+            exit(-5);
+        }
+
+    } else {
+        cout << "program object is not bound. " << endl;
+        cout << "in setVec2int() " << endl;
+        cout << "trying to set: " << name << endl;
+    }   
+}
 
 void ShaderProgram::useProgram() {
     glUseProgram(this->programId);

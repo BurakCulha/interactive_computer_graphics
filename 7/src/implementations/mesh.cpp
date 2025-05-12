@@ -396,6 +396,63 @@ void Mesh::draw(ShaderProgram& program) {
 
 }
 
+void Mesh::setPatchSize(int n) {
+    glBindVertexArray(0);
+    GLuint a_loc;
+    glGenVertexArrays(1, &this->patch_vaoId);
+    glBindVertexArray(this->patch_vaoId);
+    cout << "patch vao id: " << this->patch_vaoId << endl;
+
+    glCreateBuffers(1, &this->patch_pboId);
+    glBindBuffer(GL_ARRAY_BUFFER, this->patch_pboId);
+    glBufferData(GL_ARRAY_BUFFER, this->unique_vertex_positions.size() * sizeof(glm::vec3), 
+                            &this->unique_vertex_positions[0].x, GL_STATIC_DRAW);
+    a_loc = this->meshAttribLocMap["a_pos"]; // i am getting attribute locations from map. 
+                                             // this map is attribute of this class. 
+                                             // this map could come from a parameter which is ShaderProgram type.
+                                             // of course as a convention i assume a program is bound to opengl context.
+    glEnableVertexAttribArray(a_loc);
+    glVertexAttribPointer(a_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+
+    glCreateBuffers(1, &this->patch_nboId);
+    glBindBuffer(GL_ARRAY_BUFFER, this->patch_nboId);
+    glBufferData(GL_ARRAY_BUFFER, this->unique_vertex_normals.size() * sizeof(glm::vec3), 
+                            &this->unique_vertex_normals[0].x, GL_STATIC_DRAW);
+    a_loc = this->meshAttribLocMap["a_nrm"];
+    glEnableVertexAttribArray(a_loc);
+    glVertexAttribPointer(a_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+
+    glCreateBuffers(1, &this->patch_texboId);
+    glBindBuffer(GL_ARRAY_BUFFER, this->patch_texboId);
+    glBufferData(GL_ARRAY_BUFFER, this->unique_vertex_texCoords.size() * sizeof(glm::vec2), 
+                            &this->unique_vertex_texCoords[0].x, GL_STATIC_DRAW);
+    a_loc = this->meshAttribLocMap["a_texCoord"];
+    glEnableVertexAttribArray(a_loc);
+    glVertexAttribPointer(a_loc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+
+    glPatchParameteri(GL_PATCH_VERTICES, n);
+
+}
+
+void Mesh::drawPatches(ShaderProgram& program) {
+    program.useProgram();
+
+    for(int i=0; i<this->textures.size(); i++) {
+
+        glActiveTexture(GL_TEXTURE0 + this->textures[i].textureUnit);
+        // set uniform sampler.
+        glUniform1i(glGetUniformLocation(program.programId, this->textures[i].type.c_str()), this->textures[i].textureUnit);
+    }
+
+    // glBindVertexArray(this->vaoId);
+    glBindVertexArray(this->patch_vaoId);
+    glDrawArrays(GL_PATCHES, 0, this->unique_vertex_positions.size());
+    glBindVertexArray(0);
+}
+
 void Mesh::transformMesh(const glm::mat4& mat) {
     this->modelMatrix = mat * this->modelMatrix;
     return;

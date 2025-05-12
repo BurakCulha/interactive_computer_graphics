@@ -36,6 +36,9 @@ class ShaderProgram {
         void setVec3(const string& name, const glm::vec3& val);
         void setVec2(const string& name, const glm::vec2& val);
         void setVec4(const string& name, const glm::vec4& val);
+        void setVec4int(const string& name, const glm::ivec4& val);
+        void setVec3int(const string& name, const glm::ivec3& val);
+        void setVec2int(const string& name, const glm::ivec2& val);
         void useProgram();
         string getShaderFromFile(string name);
 
