@@ -80,13 +80,20 @@ int main() {
     quadMesh.myTextureLoader("../img/teapot_normal.png", "normalMapTexture.png");
     quadMesh.setPatchSize(4);
 
-    quadDisplacer.setMat4("mv", glm::mat4(1));
-    quadDisplacer.setMat4("mvp", glm::mat4(1));
+    // quadDisplacer.setMat4("mv", glm::mat4(1));
+    // quadDisplacer.setMat4("mvp", glm::mat4(1));
 
-    vector<glm::vec3> poss = quadMesh.getUniqueVertexPositions();
-    for(int i=0; i<poss.size(); i++) {
-        cout << i <<". vertex: " << glm::to_string(poss[i]) << endl;
-    }
+    // vector<glm::vec3> poss = quadMesh.getUniqueVertexPositions();
+    // for(int i=0; i<poss.size(); i++) {
+    //     cout << i <<". vertex: " << glm::to_string(poss[i]) << endl;
+    // }
+
+    Camera camera(glm::vec3(0, 2.5, 5.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    glm::mat4 view = camera.getLookAtMatrix();
+    glm::mat4 proj = perspectiveProjection_constNear(fovY_scene, 1.0f, -1.0f, -1000.0f);
+    quadDisplacer.setMat4("mv", view);
+    quadDisplacer.setMat4("mvp", proj * view);
+
 
 
 //////////////////////////////////////////////////////////////////////

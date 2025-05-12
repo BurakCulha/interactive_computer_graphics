@@ -25,7 +25,7 @@ void main() {
     vec4 eval_pos = evaluatePosition();
     frag_pos = mv * eval_pos;
     gl_Position = mvp * eval_pos;
-    gl_Position = interpolate_pos(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position) + 0.0001 * gl_Position;
+    // gl_Position = interpolate_pos(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position) + 0.0001 * gl_Position;
 
 }
 
