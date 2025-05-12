@@ -23,6 +23,7 @@ class ShaderProgram {
     public:
         enum shaderTypes{vertexShader, fragmentShader, geometryShader, tesControlShader, tesEvaluationShader};
         void createShader(const string& path, ShaderProgram::shaderTypes type);
+        void linkShaderObject();
         GLuint programId;
         GLuint vsId, fsId, gsId, tesId, tcsId;
 

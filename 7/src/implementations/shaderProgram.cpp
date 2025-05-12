@@ -7,10 +7,14 @@ ShaderProgram::ShaderProgram(const string& vsPath, const string& fsPath) {
 
     this->createShader(vsPath, shaderTypes::vertexShader);
     this->createShader(fsPath, shaderTypes::fragmentShader);
-    this->linkProgram();
+    // this->linkProgram();
 
 }
 
+void ShaderProgram::linkShaderObject() {
+    this->linkProgram();
+
+}
 
 void ShaderProgram::createShader(const string& path, ShaderProgram::shaderTypes type) {
 
