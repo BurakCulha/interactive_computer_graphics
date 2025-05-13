@@ -401,7 +401,7 @@ void Mesh::setPatchSize(int n) {
     GLuint a_loc;
     glGenVertexArrays(1, &this->patch_vaoId);
     glBindVertexArray(this->patch_vaoId);
-    cout << "patch vao id: " << this->patch_vaoId << endl;
+    // cout << "patch vao id: " << this->patch_vaoId << endl;
 
     glCreateBuffers(1, &this->patch_pboId);
     glBindBuffer(GL_ARRAY_BUFFER, this->patch_pboId);

@@ -14,7 +14,7 @@
 using namespace std;
 
 ShaderProgram *teapotShaderPtr, *shadowShaderPtr;
-ShaderProgram *quadTriangulatorPtr, *quadDisplacerPtr, *quadShadowPtr;
+ShaderProgram *quadTriangulatorPtr, *quadDisplacerPtr, *quadShadowPtr, *cameraShaderPtr;
 
 int lastX{}, lastY{};
 float fovY_shadowLight{45.0f}, fovY_scene{25.0};
@@ -114,6 +114,26 @@ int main() {
     quadTriangulator.setMat4("mvp", proj * view);
 
 
+
+    ShaderProgram quadShadow("../glsl/quadShadow.vert", "../glsl/quadShadow.frag");
+    quadShadow.createShader("../glsl/quadShadow.tese", ShaderProgram::shaderTypes::tesEvaluationShader);
+    quadShadow.createShader("../glsl/quadShadow.tesc", ShaderProgram::shaderTypes::tesControlShader);
+    quadShadow.linkShaderObject();
+    quadShadow.useProgram();
+    quadShadowPtr = &quadShadow;
+    quadShadow.setMat4("mlp", glm::mat4(1));
+
+
+
+
+    ShaderProgram cameraShader("../glsl/cameraShader.vert", "../glsl/cameraShader.frag");
+    cameraShader.linkShaderObject();
+    cameraShader.useProgram();
+    cameraShaderPtr = &cameraShader;
+    // cameraShader.setMat4("mvp", glm::mat4(1));
+
+    Mesh cameraMesh("../objFiles/light.obj");
+    
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -235,6 +255,8 @@ int main() {
 
         ///////////
 
+        // burda quad shadow rendering yapilir.
+
         quadDisplacer.useProgram();
         // quadMesh.draw(quadDisplacer);
         quadMesh.drawPatches(quadDisplacer);
@@ -243,6 +265,13 @@ int main() {
             quadTriangulator.useProgram();
             quadMesh.drawPatches(quadTriangulator);
         }
+
+        cameraShader.useProgram();
+        cameraMesh.draw(cameraShader);
+
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        quadShadow.useProgram();
+        quadMesh.drawPatches(quadShadow);
 
         ///////////////////////// imgui things begin. ////////////////////////
         ImGui_ImplOpenGL3_NewFrame();
@@ -308,6 +337,11 @@ int main() {
         quadTriangulator.setVec4int("OL", outerLevels);
         quadTriangulator.setVec2int("IL", innerLevels);
         quadTriangulator.setFloat("u_exaggerationFactor", u_exaggerationFactor);
+
+        quadShadow.useProgram();
+        quadShadow.setVec4int("OL", outerLevels);
+        quadShadow.setVec2int("IL", innerLevels);
+        quadShadow.setFloat("u_exaggerationFactor", u_exaggerationFactor);
 
 
 
