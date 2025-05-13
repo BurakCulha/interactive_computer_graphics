@@ -72,7 +72,14 @@ int main() {
     quadDisplacerPtr = &quadDisplacer;
     quadDisplacer.useProgram();
 
-    // ShaderProgram quadTriangulator;
+    // ShaderProgram quadTriangulator("../glsl/quadTriangulator.vert", "../glsl/quadTriangulator.frag");
+    // quadTriangulator.createShader("../glsl/quadTriangulator.tesc", ShaderProgram::shaderTypes::tesControlShader);
+    // quadTriangulator.createShader("../glsl/quadTriangulator.tese", ShaderProgram::shaderTypes::tesEvaluationShader);
+    // quadTriangulator.createShader("../glsl/quadTriangulator.geom", ShaderProgram::shaderTypes::geometryShader);
+    // quadTriangulator.linkShaderObject();
+    // quadTriangulatorPtr = &quadTriangulator;
+
+    
     // ShaderProgram quadShadow;
 
     Mesh quadMesh("../objFiles/quad.obj");
@@ -88,11 +95,23 @@ int main() {
     //     cout << i <<". vertex: " << glm::to_string(poss[i]) << endl;
     // }
 
-    Camera camera(glm::vec3(0, 2.5, 5.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Camera camera(glm::vec3(0, 0.5, 2.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     glm::mat4 view = camera.getLookAtMatrix();
     glm::mat4 proj = perspectiveProjection_constNear(fovY_scene, 1.0f, -1.0f, -1000.0f);
     quadDisplacer.setMat4("mv", view);
     quadDisplacer.setMat4("mvp", proj * view);
+
+
+
+    ShaderProgram quadTriangulator("../glsl/quadTriangulator.vert", "../glsl/quadTriangulator.frag");
+    quadTriangulator.createShader("../glsl/quadTriangulator.tesc", ShaderProgram::shaderTypes::tesControlShader);
+    quadTriangulator.createShader("../glsl/quadTriangulator.tese", ShaderProgram::shaderTypes::tesEvaluationShader);
+    quadTriangulator.createShader("../glsl/quadTriangulator.geom", ShaderProgram::shaderTypes::geometryShader);
+    quadTriangulator.linkShaderObject();
+    quadTriangulatorPtr = &quadTriangulator;
+    quadTriangulator.useProgram();
+    // quadTriangulator.setMat4("mv", view);
+    quadTriangulator.setMat4("mvp", proj * view);
 
 
 
@@ -168,7 +187,10 @@ int main() {
 
 
 
+    bool showTriangulation{false};
+
     while(!glfwWindowShouldClose(windowPtr)) {
+
 
 
         //////////////////////////////////////////////////////////
@@ -216,6 +238,11 @@ int main() {
         quadDisplacer.useProgram();
         // quadMesh.draw(quadDisplacer);
         quadMesh.drawPatches(quadDisplacer);
+
+        if(showTriangulation) {
+            quadTriangulator.useProgram();
+            quadMesh.drawPatches(quadTriangulator);
+        }
 
         ///////////////////////// imgui things begin. ////////////////////////
         ImGui_ImplOpenGL3_NewFrame();
@@ -265,15 +292,23 @@ int main() {
         // shadowShader.setMat4("projection", shadowProjMatrix);
 
 
-        static glm::ivec4 outerLevels, innerLevels;
+        static glm::ivec4 outerLevels{1}, innerLevels{1};
         static float u_exaggerationFactor{};
-        ImGui::SliderInt4("outer levels: ", &outerLevels.x, 0, 100);
-        ImGui::SliderInt2("inner levels: ", &innerLevels.x, 0, 100);
+        ImGui::SliderInt4("outer levels: ", &outerLevels.x, 1, 100);
+        ImGui::SliderInt2("inner levels: ", &innerLevels.x, 1, 100);
         ImGui::SliderFloat("exaggeration factor: ", &u_exaggerationFactor, 0.001, 0.4);
+        ImGui::Checkbox("show triangulation", &showTriangulation);
         
+        quadDisplacer.useProgram();
         quadDisplacer.setVec4int("OL", outerLevels);
         quadDisplacer.setVec2int("IL", innerLevels);
         quadDisplacer.setFloat("u_exaggerationFactor", u_exaggerationFactor);
+
+        quadTriangulator.useProgram();
+        quadTriangulator.setVec4int("OL", outerLevels);
+        quadTriangulator.setVec2int("IL", innerLevels);
+        quadTriangulator.setFloat("u_exaggerationFactor", u_exaggerationFactor);
+
 
 
 
