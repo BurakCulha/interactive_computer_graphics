@@ -5,6 +5,7 @@ layout(quads, equal_spacing, ccw) in;
 uniform sampler2D displacementMapTexture;
 uniform mat4 mv;
 uniform mat4 mvp;
+uniform mat4 shadowMatrix;
 uniform float u_exaggerationFactor;
 
 in vec3 eval_nrm[];
@@ -13,6 +14,7 @@ in vec2 eval_tex[];
 
 out vec2 frag_tex;
 out vec4 frag_pos;
+out vec4 frag_shadowMapPosition;
 
 
 vec4 interpolate_pos(vec4 p0, vec4 p1, vec4 p2, vec4 p3);
@@ -25,6 +27,7 @@ void main() {
     vec4 eval_pos = evaluatePosition();
     frag_pos = mv * eval_pos;
     gl_Position = mvp * eval_pos;
+    frag_shadowMapPosition = shadowMatrix * eval_pos;
     // gl_Position = interpolate_pos(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position) + 0.0001 * gl_Position;
 
 }

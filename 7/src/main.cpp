@@ -100,6 +100,8 @@ int main() {
     glm::mat4 proj = perspectiveProjection_constNear(fovY_scene, 1.0f, -1.0f, -1000.0f);
     quadDisplacer.setMat4("mv", view);
     quadDisplacer.setMat4("mvp", proj * view);
+    quadDisplacer.setVec3("light_target", glm::vec3(view * glm::vec4(0, 0, 0, 1)));
+    quadDisplacer.setVec3("diffuse_color", glm::vec3(0.25, 0.25, 0.25));
 
 
 
@@ -132,8 +134,15 @@ int main() {
     cameraShaderPtr = &cameraShader;
     // cameraShader.setMat4("mvp", glm::mat4(1));
 
-    Mesh cameraMesh("../objFiles/light.obj");
-    
+    Mesh shadowLightMesh("../objFiles/light.obj");
+    shadowLightMesh.transformMesh(glm::scale(glm::mat4(1), glm::vec3(0.51)));
+    glm::vec3 shadowLightPosition(1), shadowLightTarget(0, 0, 0), shadowLightUp(0, 1, 0);
+    Camera shadowLightCamera(shadowLightPosition, shadowLightTarget, shadowLightUp);
+    glm::mat4 shadowLightMeshOrienterMatrix = glm::inverse(shadowLightCamera.getLookAtMatrix());
+
+    cameraShader.setMat4("mvp", proj * view * shadowLightMeshOrienterMatrix * shadowLightMesh.getModelMatrix());
+
+
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -256,6 +265,11 @@ int main() {
         ///////////
 
         // burda quad shadow rendering yapilir.
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // quadShadow.useProgram();
+        // quadMesh.drawPatches(quadShadow);
+
+
 
         quadDisplacer.useProgram();
         // quadMesh.draw(quadDisplacer);
@@ -267,11 +281,12 @@ int main() {
         }
 
         cameraShader.useProgram();
-        cameraMesh.draw(cameraShader);
+        shadowLightMesh.draw(cameraShader);
 
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        quadShadow.useProgram();
-        quadMesh.drawPatches(quadShadow);
+
+
+
+
 
         ///////////////////////// imgui things begin. ////////////////////////
         ImGui_ImplOpenGL3_NewFrame();
@@ -281,34 +296,49 @@ int main() {
         ImGui::Begin("imgui window for input for shading project");
 
 
-        // static glm::vec3 ambient_color(0.3), specular_color(1), cls(1);
+        static glm::vec3 specular_color(1);
 
-        // ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
+        ImGui::SliderFloat3("specular color: ", &specular_color.x, 0, 1);
+        quadDisplacer.useProgram();
+        quadDisplacer.setVec3("specular_color", specular_color);
         // teapotShader.setVec3("specular_color", specular_color);
 
 
         // static glm::vec3 lightObjPosition = shadowLight.getCamPos();
-        // static float sphericalAlpha{}, sphericalBeta{};
-        // ImGui::SliderFloat("light spherical Alpha", &sphericalAlpha, -80, 80);
-        // ImGui::SliderFloat("light spherical Beta", &sphericalBeta, -178, 178);
-        // lightObjPosition.y = 2 * glm::sin(glm::radians(sphericalAlpha));
-        // lightObjPosition.z = 2 * glm::cos(glm::radians(sphericalAlpha)) * glm::cos(glm::radians(sphericalBeta));
-        // lightObjPosition.x = 2 * glm::cos(glm::radians(sphericalAlpha)) * glm::sin(glm::radians(sphericalBeta));
+        static glm::vec3 lightObjPosition(1);
+        static float sphericalAlpha{}, sphericalBeta{}, lightDistance{1};
+        ImGui::SliderFloat("light spherical Alpha", &sphericalAlpha, -80, 80);
+        ImGui::SliderFloat("light spherical Beta", &sphericalBeta, -78, 78);
+        ImGui::SliderFloat("light object distance", &lightDistance, 1, 5);
+        // lightObjPosition.y = 4 * glm::sin(glm::radians(sphericalAlpha));
+        // lightObjPosition.z = 4 * glm::cos(glm::radians(sphericalAlpha)) * glm::cos(glm::radians(sphericalBeta));
+        // lightObjPosition.x = 4 * glm::cos(glm::radians(sphericalAlpha)) * glm::sin(glm::radians(sphericalBeta));
+        lightObjPosition.y = lightDistance * glm::sin(glm::radians(sphericalAlpha));
+        lightObjPosition.z = lightDistance * glm::cos(glm::radians(sphericalAlpha)) * glm::cos(glm::radians(sphericalBeta));
+        lightObjPosition.x = lightDistance * glm::cos(glm::radians(sphericalAlpha)) * glm::sin(glm::radians(sphericalBeta));
+        shadowLightPosition = lightObjPosition;
+
+        shadowLightCamera.changeProperties(shadowLightPosition, shadowLightTarget, shadowLightUp);
+        shadowLightMeshOrienterMatrix = glm::inverse(shadowLightCamera.getLookAtMatrix());
+ 
         // shadowLight.changeProperties(lightObjPosition, shadowLight.getCamTarg(), shadowLight.getCamUp());
         // lightOrienterMatrix = glm::inverse(shadowLight.getLookAtMatrix());
         // ImGui::SliderFloat3("lightpos:", &lightObjPosition.x, -2, 2);
 
-        // static float shininess{25};
-        // ImGui::SliderFloat("shininess", &shininess, 0, 250);
+        static float shininess{25};
+        ImGui::SliderFloat("shininess", &shininess, 0, 250);
+        quadDisplacer.setFloat("shininess", shininess);
         // teapotShader.setFloat("shininess", shininess);
         // glm::vec4 lightObjPositionInViewSpace = transformation_in_camera_frame * view * glm::vec4(lightObjPosition, 1);
+        glm::vec4 lightObjPositionInViewSpace = view * glm::vec4(lightObjPosition, 1);
         // teapotShader.setVec3("light_position", glm::vec3(lightObjPositionInViewSpace));
 
 
         // static float bias{};
         // ImGui::SliderFloat("bias", &bias, -1.8, 1.8);
         // static float light_angle_property{45};
-        // ImGui::SliderFloat("light angle property", &light_angle_property, 0, 90.0f);
+        static float light_angle_property{45};
+        ImGui::SliderFloat("light angle property", &light_angle_property, 0, 88.0f);
         // teapotShader.setFloat("light_angle_property", glm::radians(light_angle_property));
         // fovY_shadowLight = light_angle_property;
 
@@ -332,6 +362,8 @@ int main() {
         quadDisplacer.setVec4int("OL", outerLevels);
         quadDisplacer.setVec2int("IL", innerLevels);
         quadDisplacer.setFloat("u_exaggerationFactor", u_exaggerationFactor);
+        quadDisplacer.setVec3("light_position", glm::vec3(lightObjPositionInViewSpace));
+        quadDisplacer.setFloat("light_angle_property", glm::radians(light_angle_property));
 
         quadTriangulator.useProgram();
         quadTriangulator.setVec4int("OL", outerLevels);
@@ -344,6 +376,8 @@ int main() {
         quadShadow.setFloat("u_exaggerationFactor", u_exaggerationFactor);
 
 
+        cameraShader.useProgram();
+        cameraShader.setMat4("mvp", proj * view * shadowLightMeshOrienterMatrix * shadowLightMesh.getModelMatrix());
 
 
         ImGui::End();
