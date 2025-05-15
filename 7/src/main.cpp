@@ -79,7 +79,7 @@ int main() {
     quadMesh.setPatchSize(4);
 
 
-    Camera camera(glm::vec3(0, 0.0, 1.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Camera camera(glm::vec3(0, 0.0, 2.2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     glm::mat4 view = camera.getLookAtMatrix();
     glm::mat4 proj = perspectiveProjection_constNear(fovY_scene, 1.0f, -1.0f, -1000.0f);
     quadDisplacer.setMat4("mv", view);
