@@ -123,7 +123,7 @@ int main() {
     quadShadow.linkShaderObject();
     quadShadow.useProgram();
     quadShadowPtr = &quadShadow;
-    quadShadow.setMat4("mlp", glm::mat4(1));
+    // quadShadow.setMat4("mlp", glm::mat4(1));
 
 
 
@@ -143,6 +143,19 @@ int main() {
     cameraShader.setMat4("mvp", proj * view * shadowLightMeshOrienterMatrix * shadowLightMesh.getModelMatrix());
 
 
+
+    Framebuffer fb(1024, 1024);
+    fb.createDepthTexture("shadowMap");
+    fb.configureFramebufferForDepthMap();
+
+    quadDisplacer.useProgram();
+    quadDisplacer.setInt(fb.getTexture().type.c_str(), fb.getTexture().textureUnit);
+    glm::mat4 shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * proj * shadowLightCamera.getLookAtMatrix();
+    quadDisplacer.setMat4("shadowMatrix", shadowMatrix);
+
+
+    quadShadow.useProgram();
+    quadShadow.setMat4("mlp", proj * shadowLightCamera.getLookAtMatrix());
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -241,8 +254,8 @@ int main() {
 
         // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         // glViewport(0, 0, 600, 600);
-        glClearColor(0, 0, 0, 1); // plane background color;
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // glClearColor(0, 0, 0, 1); // plane background color;
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 
@@ -265,9 +278,19 @@ int main() {
         ///////////
 
         // burda quad shadow rendering yapilir.
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // quadShadow.useProgram();
-        // quadMesh.drawPatches(quadShadow);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        fb.setAsRenderTarget();
+        glClearColor(0, 0, 0, 0); // shadowMap background color.
+        glClear(GL_DEPTH_BUFFER_BIT);
+        quadShadow.useProgram();
+        quadMesh.drawPatches(quadShadow);
+
+        glGenerateTextureMipmap(fb.getTexture().id); // generate mipmap for rendered texture.
+
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glViewport(0, 0, 600, 600);
+        glClearColor(0, 0, 0, 1); // plane background color;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 
@@ -309,7 +332,7 @@ int main() {
         static float sphericalAlpha{}, sphericalBeta{}, lightDistance{1};
         ImGui::SliderFloat("light spherical Alpha", &sphericalAlpha, -80, 80);
         ImGui::SliderFloat("light spherical Beta", &sphericalBeta, -78, 78);
-        ImGui::SliderFloat("light object distance", &lightDistance, 1, 5);
+        ImGui::SliderFloat("light object distance", &lightDistance, 1, 3.2);
         // lightObjPosition.y = 4 * glm::sin(glm::radians(sphericalAlpha));
         // lightObjPosition.z = 4 * glm::cos(glm::radians(sphericalAlpha)) * glm::cos(glm::radians(sphericalBeta));
         // lightObjPosition.x = 4 * glm::cos(glm::radians(sphericalAlpha)) * glm::sin(glm::radians(sphericalBeta));
@@ -334,8 +357,8 @@ int main() {
         // teapotShader.setVec3("light_position", glm::vec3(lightObjPositionInViewSpace));
 
 
-        // static float bias{};
-        // ImGui::SliderFloat("bias", &bias, -1.8, 1.8);
+        static float bias{};
+        ImGui::SliderFloat("bias", &bias, -1.8, 1.8);
         // static float light_angle_property{45};
         static float light_angle_property{45};
         ImGui::SliderFloat("light angle property", &light_angle_property, 0, 88.0f);
@@ -364,6 +387,8 @@ int main() {
         quadDisplacer.setFloat("u_exaggerationFactor", u_exaggerationFactor);
         quadDisplacer.setVec3("light_position", glm::vec3(lightObjPositionInViewSpace));
         quadDisplacer.setFloat("light_angle_property", glm::radians(light_angle_property));
+        shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5) - bias/100.0f) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * proj * shadowLightCamera.getLookAtMatrix();
+        quadDisplacer.setMat4("shadowMatrix", shadowMatrix);
 
         quadTriangulator.useProgram();
         quadTriangulator.setVec4int("OL", outerLevels);
@@ -374,6 +399,7 @@ int main() {
         quadShadow.setVec4int("OL", outerLevels);
         quadShadow.setVec2int("IL", innerLevels);
         quadShadow.setFloat("u_exaggerationFactor", u_exaggerationFactor);
+        quadShadow.setMat4("mlp", proj * shadowLightCamera.getLookAtMatrix());
 
 
         cameraShader.useProgram();
