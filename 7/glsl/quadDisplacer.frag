@@ -20,7 +20,8 @@ vec4 blinnMaterialModel();
 void main() {
 
     // fragColor = texture(normalMapTexture, frag_tex) + frag_pos * 0.000001;
-    fragColor = blinnMaterialModel() * calculateShadow() + vec4(diffuse_color * 0.3, 1);
+    vec4 ambient_color = vec4(diffuse_color * 0.3, 1);
+    fragColor = blinnMaterialModel() * calculateShadow() + ambient_color;
     // fragColor = blinnMaterialModel() + calculateShadow() * 0.000001 + vec4(diffuse_color * 0.3, 1);
 }
 

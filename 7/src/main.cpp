@@ -17,7 +17,7 @@ ShaderProgram *teapotShaderPtr, *shadowShaderPtr;
 ShaderProgram *quadTriangulatorPtr, *quadDisplacerPtr, *quadShadowPtr, *cameraShaderPtr;
 
 int lastX{}, lastY{};
-float fovY_shadowLight{45.0f}, fovY_scene{25.0};
+float fovY_shadowLight{45.0f}, fovY_scene{45.0};
 
 glm::mat4 rx(1), ry(1), tz(1), transformation_in_camera_frame(1);
 // glm::mat4 rx_plane(1), ry_plane(1), tz_plane(1), transformation_in_camera_frame_plane(1);
@@ -95,7 +95,7 @@ int main() {
     //     cout << i <<". vertex: " << glm::to_string(poss[i]) << endl;
     // }
 
-    Camera camera(glm::vec3(0, 0.5, 2.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Camera camera(glm::vec3(0, 0.0, 1.4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     glm::mat4 view = camera.getLookAtMatrix();
     glm::mat4 proj = perspectiveProjection_constNear(fovY_scene, 1.0f, -1.0f, -1000.0f);
     quadDisplacer.setMat4("mv", view);
@@ -123,6 +123,7 @@ int main() {
     quadShadow.linkShaderObject();
     quadShadow.useProgram();
     quadShadowPtr = &quadShadow;
+    glm::mat4 quadShadowProjectionMatrix = perspectiveProjection_constNear(fovY_shadowLight, 1, -1, -1000);
     // quadShadow.setMat4("mlp", glm::mat4(1));
 
 
@@ -144,18 +145,18 @@ int main() {
 
 
 
-    Framebuffer fb(1024, 1024);
+    Framebuffer fb(600, 600);
     fb.createDepthTexture("shadowMap");
     fb.configureFramebufferForDepthMap();
 
     quadDisplacer.useProgram();
     quadDisplacer.setInt(fb.getTexture().type.c_str(), fb.getTexture().textureUnit);
-    glm::mat4 shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * proj * shadowLightCamera.getLookAtMatrix();
+    glm::mat4 shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix();
     quadDisplacer.setMat4("shadowMatrix", shadowMatrix);
 
 
     quadShadow.useProgram();
-    quadShadow.setMat4("mlp", proj * shadowLightCamera.getLookAtMatrix());
+    quadShadow.setMat4("mlp", quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix());
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -363,7 +364,8 @@ int main() {
         static float light_angle_property{45};
         ImGui::SliderFloat("light angle property", &light_angle_property, 0, 88.0f);
         // teapotShader.setFloat("light_angle_property", glm::radians(light_angle_property));
-        // fovY_shadowLight = light_angle_property;
+        fovY_shadowLight = light_angle_property;
+        quadShadowProjectionMatrix = perspectiveProjection_constNear(fovY_shadowLight, 1, -1, -1000);
 
         // shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5 + bias/100.0f)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * shadowProjMatrix * shadowLight.getLookAtMatrix();
         // teapotShader.setMat4("shadowMatrix", shadowMatrix);
@@ -387,7 +389,7 @@ int main() {
         quadDisplacer.setFloat("u_exaggerationFactor", u_exaggerationFactor);
         quadDisplacer.setVec3("light_position", glm::vec3(lightObjPositionInViewSpace));
         quadDisplacer.setFloat("light_angle_property", glm::radians(light_angle_property));
-        shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5) - bias/100.0f) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * proj * shadowLightCamera.getLookAtMatrix();
+        shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5 - bias/100.0f)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix(); 
         quadDisplacer.setMat4("shadowMatrix", shadowMatrix);
 
         quadTriangulator.useProgram();
@@ -399,7 +401,7 @@ int main() {
         quadShadow.setVec4int("OL", outerLevels);
         quadShadow.setVec2int("IL", innerLevels);
         quadShadow.setFloat("u_exaggerationFactor", u_exaggerationFactor);
-        quadShadow.setMat4("mlp", proj * shadowLightCamera.getLookAtMatrix());
+        quadShadow.setMat4("mlp", quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix());
 
 
         cameraShader.useProgram();
