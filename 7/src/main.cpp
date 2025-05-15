@@ -135,7 +135,7 @@ int main() {
 
     quadDisplacer.useProgram();
     quadDisplacer.setInt(fb.getTexture().type.c_str(), fb.getTexture().textureUnit);
-    glm::mat4 shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix();
+    glm::mat4 shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5 - 0.004f)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix();
     quadDisplacer.setMat4("shadowMatrix", shadowMatrix);
 
 
