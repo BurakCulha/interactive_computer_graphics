@@ -56,7 +56,13 @@ vec3 interpolate_nrm(vec3 p0, vec3 p1, vec3 p2, vec3 p3) {
 
 vec4 evaluatePosition() {
     vec4 evalPos;
-    evalPos = interpolate_pos(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position, gl_in[3].gl_Position);
+    vec4 a, b, c, d;
+    a = gl_in[0].gl_Position;
+    b = gl_in[1].gl_Position;
+    c = gl_in[2].gl_Position;
+    d = gl_in[3].gl_Position;
+    evalPos = interpolate_pos(a, b, c, d);
+
     vec2 frag_tex = vec2(gl_TessCoord.x, gl_TessCoord.y);
     float heightAmount = texture(displacementMapTexture, frag_tex).r;
     heightAmount *= u_exaggerationFactor;

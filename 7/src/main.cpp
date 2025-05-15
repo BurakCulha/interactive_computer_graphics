@@ -150,6 +150,8 @@ int main() {
     while(!glfwWindowShouldClose(windowPtr)) {
 
 
+        proj = perspectiveProjection_constNear(fovY_scene, 1, -1, -1000);
+
         // burda quad shadow rendering yapilir.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         fb.setAsRenderTarget();
@@ -225,13 +227,15 @@ int main() {
         quadShadowProjectionMatrix = perspectiveProjection_constNear(fovY_shadowLight, 1, -1, -1000);
 
 
-        static glm::ivec4 outerLevels{1}, innerLevels{1};
+        static glm::ivec4 outerLevels{1}; 
+        static glm::ivec2 innerLevels{1};
         static float u_exaggerationFactor{};
         ImGui::SliderInt4("outer levels: ", &outerLevels.x, 1, 100);
         ImGui::SliderInt2("inner levels: ", &innerLevels.x, 1, 100);
         ImGui::SliderFloat("exaggeration factor: ", &u_exaggerationFactor, 0.001, 0.4);
         ImGui::Checkbox("show triangulation", &showTriangulation);
         
+        // cout << "outer levels: " << glm::to_string(outerLevels) << endl;
         quadDisplacer.useProgram();
         quadDisplacer.setVec4int("OL", outerLevels);
         quadDisplacer.setVec2int("IL", innerLevels);
@@ -240,11 +244,13 @@ int main() {
         quadDisplacer.setFloat("light_angle_property", glm::radians(light_angle_property));
         shadowMatrix = glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5 - bias/100.0f)) * glm::scale(glm::mat4(1), glm::vec3(0.5)) * quadShadowProjectionMatrix * shadowLightCamera.getLookAtMatrix(); 
         quadDisplacer.setMat4("shadowMatrix", shadowMatrix);
+        quadDisplacer.setMat4("mvp", proj * view);
 
         quadTriangulator.useProgram();
         quadTriangulator.setVec4int("OL", outerLevels);
         quadTriangulator.setVec2int("IL", innerLevels);
         quadTriangulator.setFloat("u_exaggerationFactor", u_exaggerationFactor);
+        quadTriangulator.setMat4("mvp", proj * view);
 
         quadShadow.useProgram();
         quadShadow.setVec4int("OL", outerLevels);
@@ -294,68 +300,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    // if(!ImGui::GetIO().WantCaptureMouse) {
+    if(!ImGui::GetIO().WantCaptureMouse) {
+        // cout << "y offset: " << yoffset << endl;
 
-    //     cout << "y offset: " << yoffset << endl;
-    //     static float fovY{25};
-    //     static float fovY_plane{25};
+        if(yoffset == 1) { // zoom in.
+            fovY_scene -= 0.5f;
+            if(fovY_scene <= 1) fovY_scene = 1.0f;
 
-    //     if(yoffset == 1) { // zoom in.
+        } else if(yoffset == -1) { // zoom out.
+            fovY_scene += 0.5f;
+            if(fovY_scene >= 88) fovY_scene = 88.0f;
 
-            
-    //         if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-    //             fovY_plane -= 0.5f;
-    //             if(fovY_plane<=1) fovY_plane = 1.0f;
-    //             glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
-
-
-    //         } else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) { // set both plane and teapot.
-    //             fovY_plane -= 0.5f;
-    //             if(fovY_plane<=1) fovY_plane = 1.0f;
-    //             glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
-
-
-    //             fovY -= (float)0.5f;
-    //             if(fovY<1) fovY = 1.0f;
-    //             glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-    //             teapotShaderPtr->useProgram();
-    //             teapotShaderPtr->setMat4("projection", proj);
-
-    //         } else {
-    //             fovY -= (float)0.5f;
-    //             if(fovY<1) fovY = 1.0f;
-    //             glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-    //             teapotShaderPtr->useProgram();
-    //             teapotShaderPtr->setMat4("projection", proj);
-    //         }
-
-    //     } else if(yoffset == -1) { // zoom out.
-
-    //         if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-    //             fovY_plane += 0.5f;
-    //             if(fovY_plane>=88) fovY_plane = 88.0f;
-    //             glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
-
-    //         } else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) { // set both plane and teapot.
-
-    //             fovY += (float)0.5f;
-    //             if(fovY>=88) fovY = 88.0f;
-    //             glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-    //             teapotShaderPtr->useProgram();
-    //             teapotShaderPtr->setMat4("projection", proj);
-
-    //             fovY_plane += 0.5f;
-    //             if(fovY_plane>=88) fovY_plane = 88.0f;
-    //             glm::mat4 proj_plane = perspectiveProjection_constNear(fovY_plane, 1.0f, -1.0f, -1000.0f);
-
-
-    //         } else {
-    //             fovY += (float)0.5f;
-    //             if(fovY>=88) fovY = 88.0f;
-    //             glm::mat4 proj = perspectiveProjection_constNear(fovY, 1.0f, -1.0f, -1000.0f);
-    //             teapotShaderPtr->useProgram();
-    //             teapotShaderPtr->setMat4("projection", proj);
-    //         }
-    //     }
-    // }
+        }
+    }
 }
