@@ -1,5 +1,5 @@
 ## these projects uses these:  
-opengl, glew, freeglut, glm, c++, cmake, glfw, glad and dear Imgui.   
+opengl, glew, freeglut, glm, c++, cmake, glfw, glad, stbi and dear Imgui.   
 these packages are installed via:    
 
 sudo apt update    
