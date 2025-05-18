@@ -27,4 +27,16 @@ sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-m
     - sudo make install  
 - after the installation process you are ready.  
 
+## to be able to run the my projects, you should build them.  
+to build;
+- go to any project folder
+- open that folder in your terminal and paste in your terminal these commands:
+     - mkdir build
+     - cd build
+     - cmake ..
+     - make -j4
+now, you are ready to run the executable.
+double click the executable file or in your terminal ./executable_name
+
+
 
