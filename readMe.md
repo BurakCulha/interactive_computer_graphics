@@ -12,7 +12,7 @@ sudo apt install libglew-dev
 sudo apt install libglm-dev                 
 
 ## you should also install glfw to your system.  
-## you can build from source glfw. 
+## you can build glfw from source. 
 ## these 2 commands below install dependencies of glfw.  
 sudo apt install xorg-dev  
 sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules  
