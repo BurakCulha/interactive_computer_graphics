@@ -14,7 +14,7 @@
 
 ## and using shadow mapping creates shadow.
 
-## the user can activate the triangulation of displaced vertices via gui.
+## the user can activate or deactivate displaying the triangulation of displaced vertices via gui.
 
 
 
