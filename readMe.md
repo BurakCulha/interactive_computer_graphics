@@ -20,7 +20,7 @@ sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-m
 - go to glfw downloads web page or github page.  
 - download the source code of glfw.  
 - go to glfw source code directory.  
-- open that directory your terminal. and paste these commands:  
+- open that directory in your terminal. and paste these commands:  
     - mkdir build  
     - cd build  
     - cmake ..  
