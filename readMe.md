@@ -35,7 +35,8 @@ to build;
      - cd build
      - cmake ..
      - make -j4
-now, you are ready to run the executable.
+
+now, you are ready to run the executable.  
 double click the executable file or in your terminal ./executable_name
 
 
